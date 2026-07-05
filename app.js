@@ -8,7 +8,7 @@ const cron = require('node-cron');
 const os = require('os');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // ============= GET LOCAL IP ADDRESS =============
 function getLocalIP() {
@@ -31,8 +31,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// Database connection
-// ============= DATABASE CONNECTION =============
+// ============= DATABASE CONNECTION (AUTO-DETECT) =============
 let db;
 
 // Check if running on Render (has DATABASE_URL)
@@ -48,7 +47,6 @@ if (process.env.DATABASE_URL) {
         .catch(err => console.error('PostgreSQL connection failed:', err));
 } else {
     // Running locally — use MySQL (XAMPP)
-    const mysql = require('mysql2');
     db = mysql.createConnection({
         host: 'localhost',
         user: 'root',
@@ -63,14 +61,6 @@ if (process.env.DATABASE_URL) {
         console.log('✅ Connected to MySQL (Local)');
     });
 }
-
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed:', err);
-        return;
-    }
-    console.log('✅ Connected to MySQL database');
-});
 
 // ============= EMAIL REPORT SYSTEM =============
 const emailTransporter = nodemailer.createTransport({
