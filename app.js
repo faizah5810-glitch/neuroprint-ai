@@ -32,12 +32,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Database connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'neuroprint_db'
-});
+// ============= DATABASE CONNECTION =============
+let db;
+
+// Check if running on Render (has DATABASE_URL)
+if (process.env.DATABASE_URL) {
+    // Running on Render — use PostgreSQL
+    const { Client } = require('pg');
+    db = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+    });
+    db.connect()
+        .then(() => console.log('✅ Connected to PostgreSQL (Render)'))
+        .catch(err => console.error('PostgreSQL connection failed:', err));
+} else {
+    // Running locally — use MySQL (XAMPP)
+    const mysql = require('mysql2');
+    db = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'neuroprint_db'
+    });
+    db.connect((err) => {
+        if (err) {
+            console.error('Database connection failed:', err);
+            return;
+        }
+        console.log('✅ Connected to MySQL (Local)');
+    });
+}
 
 db.connect((err) => {
     if (err) {
