@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint AI | Wellness Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .wellness-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .wellness-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 8, 12, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 18px 30px;
+            border-radius: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .logo-section { display: flex; align-items: center; gap: 30px; }
+        .neon-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .subtitle { display: block; font-size: 18px; color: #888; margin-top: 4px; }
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #00ff88; }
+            50% { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 15px #00ff88; }
+        }
+        .live-text { color: #00ff88; font-size: 11px; font-weight: 700; font-family: 'Orbitron', monospace; }
+        .user-name { color: #00d4ff; font-weight: 700; font-family: 'Space Grotesk', monospace; font-size: 16px; }
+        .logout-btn {
+            background: rgba(255, 0, 64, 0.15);
+            border: 1.5px solid #ff0040;
+            color: #ff0040;
+            padding: 6px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .logout-btn:hover { background: rgba(255, 0, 64, 0.4); box-shadow: 0 0 15px rgba(255, 0, 64, 0.3); transform: scale(1.02); }
+        
+        .section-title { margin-bottom: 25px; text-align: center; }
+        .section-title h2 { color: #fff; font-size: 22px; font-family: 'Orbitron', monospace; margin-bottom: 8px; }
+        .subtitle-center { color: #888; font-size: 13px; text-align: center; margin: 0 auto; }
+        
+        /* Emotion Cards - 4 atas, 2 bawah center */
+        .emotion-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        .emotion-row-center {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .emotion-card {
+            min-width: 170px;
+            max-width: 190px;
+            background: rgba(8,8,12,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 22px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+            border: 1px solid #2a2a2a;
+            flex: 0 1 auto;
+        }
+        .emotion-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #00d4ff;
+            box-shadow: 0 0 25px rgba(0,212,255,0.3);
+        }
+        .emotion-icon { font-size: 48px; margin-bottom: 12px; transition: transform 0.2s; }
+        .emotion-card:hover .emotion-icon { transform: scale(1.1); }
+        .emotion-name { font-size: 16px; font-weight: 700; color: #00d4ff; font-family: 'Orbitron', monospace; margin-bottom: 6px; }
+        .emotion-desc { font-size: 11px; color: #aaa; }
+        
+        .tips-panel { background: rgba(8,8,12,0.95); backdrop-filter: blur(20px); border-radius: 30px; margin-bottom: 40px; border: 1px solid #00d4ff; overflow: hidden; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .tips-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,255,136,0.08)); border-bottom: 1px solid rgba(0,212,255,0.2); }
+        .tips-emotion-icon { font-size: 32px; }
+        .tips-header h3 { color: #00d4ff; font-size: 18px; font-family: 'Orbitron', monospace; margin: 0; flex: 1; margin-left: 15px; }
+        .close-tips { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; transition: all 0.2s; }
+        .close-tips:hover { color: #ff0040; }
+        .tips-content { padding: 25px; }
+        .tip-item { padding: 15px; margin-bottom: 12px; background: rgba(0,212,255,0.05); border-radius: 20px; border-left: 3px solid #00d4ff; }
+        .tip-title { font-weight: 700; color: #00ff88; margin-bottom: 8px; }
+        .tip-text { font-size: 14px; color: #ccc; line-height: 1.6; }
+        
+        /* BRAIN FOCUS GAME (Fast Typing) - Saiz sama macam memory game */
+        .game-container-brain {
+            background: rgba(8,8,12,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+        }
+        .game-container-brain:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 25px rgba(0,212,255,0.15);
+        }
+        .game-controls-brain {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .level-buttons-brain {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .level-btn-brain {
+            background: rgba(0,212,255,0.15);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .level-btn-brain:hover, .level-btn-brain.active {
+            background: rgba(0,212,255,0.4);
+            box-shadow: 0 0 12px rgba(0,212,255,0.3);
+            transform: scale(1.02);
+        }
+        .stats-brain {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-brain {
+            background: rgba(0,0,0,0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            text-align: center;
+        }
+        .stat-brain-label {
+            font-size: 10px;
+            color: #888;
+        }
+        .stat-brain-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+        }
+        .word-display-brain {
+            background: rgba(0,0,0,0.4);
+            border-radius: 30px;
+            padding: 30px 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid #333;
+        }
+        .current-word-brain {
+            font-size: 42px;
+            font-weight: 900;
+            color: #00ff88;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(0,255,136,0.3);
+        }
+        .typing-input-brain {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 18px;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #333;
+            border-radius: 50px;
+            color: #fff;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .typing-input-brain:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0,212,255,0.3);
+        }
+        .typing-input-brain.correct {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0,255,136,0.3);
+        }
+        .typing-input-brain.wrong {
+            border-color: #ff0040;
+            box-shadow: 0 0 20px rgba(255,0,64,0.3);
+            animation: shake 0.3s;
+        }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .game-status-brain {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+        }
+        .btn-brain {
+            background: linear-gradient(135deg, #00d4ff20, #00ff8820);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .btn-brain:hover {
+            background: linear-gradient(135deg, #00d4ff40, #00ff8840);
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0,212,255,0.3);
+        }
+        .btn-brain:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .game-buttons-brain {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* Brain Focus Stats Grid */
+        .stats-grid-brain {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box-brain {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .stat-box-brain:nth-child(1):hover { background: rgba(0, 255, 136, 0.15); transform: translateY(-3px); border: 1px solid #00ff88; }
+        .stat-box-brain:nth-child(2):hover { background: rgba(255, 0, 64, 0.15); transform: translateY(-3px); border: 1px solid #ff0040; }
+        .stat-box-brain:nth-child(3):hover { background: rgba(0, 212, 255, 0.15); transform: translateY(-3px); border: 1px solid #00d4ff; }
+        .stat-box-brain:nth-child(4):hover { background: rgba(255, 170, 0, 0.15); transform: translateY(-3px); border: 1px solid #ffaa00; }
+        
+        .stat-label-brain {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        .stat-value-brain {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+        }
+        .stat-box-brain:nth-child(1) .stat-value-brain { color: #00ff88; }
+        .stat-box-brain:nth-child(2) .stat-value-brain { color: #ff0040; }
+        .stat-box-brain:nth-child(3) .stat-value-brain { color: #00d4ff; }
+        .stat-box-brain:nth-child(4) .stat-value-brain { color: #ffaa00; }
+        
+        /* MEMORY MATCH GAME */
+        .game-container {
+            background: rgba(8,8,12,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid #2a2a2a;
+        }
+        .game-container:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 25px rgba(0,212,255,0.15);
+        }
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .level-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+        .level-btn {
+            background: rgba(0,212,255,0.15);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 8px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .level-btn:hover, .level-btn.active { background: rgba(0,212,255,0.4); box-shadow: 0 0 12px rgba(0,212,255,0.3); transform: scale(1.02); }
+        .game-stats { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .moves-count, .time-count { color: #00ff88; font-family: 'Orbitron', monospace; font-size: 14px; }
+        .reset-game-btn {
+            background: rgba(255,0,64,0.15);
+            border: 1px solid #ff0040;
+            color: #ff0040;
+            padding: 6px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .reset-game-btn:hover { background: rgba(255,0,64,0.3); }
+        .game-board {
+            display: grid;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        .game-board.easy { grid-template-columns: repeat(4, 1fr); }
+        .game-board.medium { grid-template-columns: repeat(4, 1fr); }
+        .game-board.hard { grid-template-columns: repeat(4, 1fr); }
+        .card {
+            aspect-ratio: 1 / 0.8;
+            min-width: 80px;
+            background: linear-gradient(145deg, #1a1a2a, #0f0f18);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            transition: all 0.2s;
+            border: 1px solid #333;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            word-break: break-word;
+        }
+        .card.flipped, .card.matched { background: linear-gradient(145deg, #00d4ff20, #00ff8820); border-color: #00d4ff; transform: scale(0.98); }
+        .card.matched { opacity: 0.5; cursor: default; border-color: #00ff88; }
+        .card:hover:not(.matched) { transform: scale(1.03); border-color: #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.2); }
+        .game-message { text-align: center; font-size: 18px; font-weight: bold; color: #00ff88; margin-top: 15px; }
+        
+        /* QUOTES MODAL */
+        .modal-quotes {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(16px);
+        }
+        .modal-quotes-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(12,12,22,0.98), rgba(8,8,16,0.98));
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 60px;
+            width: 600px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #00d4ff;
+            box-shadow: 0 0 60px rgba(0,212,255,0.3);
+            animation: modalPop 0.4s ease;
+        }
+        @keyframes modalPop {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        .modal-quotes-close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+            transition: all 0.2s;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+        .modal-quotes-close:hover { color: #ff0040; }
+        .modal-quotes-content h3 { color: #00d4ff; margin-bottom: 10px; font-family: 'Orbitron', monospace; font-size: 24px; margin-top: 0; }
+        .modal-quotes-content p { color: #aaa; margin-bottom: 25px; }
+        .card-deck { display: flex; justify-content: center; gap: 25px; flex-wrap: wrap; margin: 20px 0; }
+        .wisdom-card { width: 90px; height: 110px; background: linear-gradient(145deg, #1a1a2a, #0f0f18); border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 32px; font-weight: bold; transition: all 0.3s; border: 2px solid #00d4ff; box-shadow: 0 4px 15px rgba(0,0,0,0.3); color: #00d4ff; }
+        .wisdom-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 0 25px rgba(0,212,255,0.4); background: linear-gradient(145deg, #00d4ff30, #00ff8830); }
+        .wisdom-card.disabled { pointer-events: none; opacity: 0.5; transform: none; }
+        .quote-display { margin-top: 25px; padding: 20px; background: rgba(0,212,255,0.12); border-radius: 30px; border-left: 4px solid #00ff88; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .quote-display p { font-size: 18px; color: #eee; font-style: italic; line-height: 1.5; }
+        .quote-display small { display: block; margin-top: 12px; color: #00d4ff; }
+        
+        /* GAME RESULT MODAL */
+        .modal-result {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(16px);
+        }
+        .modal-result-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(12,12,22,0.98), rgba(8,8,16,0.98));
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 50px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 60px rgba(0,255,136,0.3);
+            animation: modalPop 0.4s ease;
+        }
+        .modal-result-close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .modal-result-close:hover { color: #ff0040; }
+        .modal-result-content h3 { color: #00ff88; font-family: 'Orbitron', monospace; font-size: 28px; margin-bottom: 15px; }
+        .result-stats { background: rgba(0,0,0,0.4); border-radius: 25px; padding: 15px; margin: 15px 0; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; color: #ccc; }
+        .close-result-btn {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #00d4ff20, #00ff8820);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .footer-back { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .back-to-dashboard { display: inline-block; color: #00d4ff; text-decoration: none; font-family: 'Space Grotesk', monospace; font-size: 14px; padding: 10px 24px; border: 1px solid #00d4ff; border-radius: 40px; transition: all 0.3s; background: rgba(0,212,255,0.05); }
+        .back-to-dashboard:hover { background: rgba(0,212,255,0.2); box-shadow: 0 0 15px rgba(0,212,255,0.3); transform: translateY(-2px); }
+        
+        @media (max-width: 800px) {
+            .emotion-row { gap: 15px; }
+            .emotion-row-center { gap: 15px; }
+            .emotion-card { min-width: 140px; }
+            .game-board.easy, .game-board.medium, .game-board.hard { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .card { font-size: 11px; min-width: 70px; }
+            .stats-grid-brain { grid-template-columns: repeat(2, 1fr); }
+            .modal-quotes-content { width: 95%; padding: 25px; }
+            .wisdom-card { width: 70px; height: 90px; font-size: 28px; }
+            .modal-result-content { width: 90%; padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    
+    <div class="wellness-container">
+        <div class="wellness-header">
+            <div class="logo-section">
+                <div class="logo">
+                    <span class="neon-text">NEUROPRINT AI</span>
+                    <span class="subtitle">WELLNESS LIBRARY</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="live-status"><span class="live-dot"></span><span class="live-text">WELLNESS</span></div>
+                <span class="user-name" id="userName">👤 LOADING...</span>
+                <button class="logout-btn" onclick="logout()">🔓 LOGOUT</button>
+            </div>
+        </div>
+        
+        <!-- TIPS BY EMOTION SECTION -->
+        <div class="section-title">
+            <h2>📚 Wellness Tips by Emotion</h2>
+            <p class="subtitle-center">Select your current emotion to get personalized advice</p>
+        </div>
+        
+        <div class="emotion-row">
+            <div class="emotion-card" data-emotion="stress"><div class="emotion-icon">😰</div><div class="emotion-name">STRESS</div><div class="emotion-desc">Feeling overwhelmed?</div></div>
+            <div class="emotion-card" data-emotion="anxious"><div class="emotion-icon">😟</div><div class="emotion-name">ANXIOUS</div><div class="emotion-desc">Worried or restless?</div></div>
+            <div class="emotion-card" data-emotion="calm"><div class="emotion-icon">😌</div><div class="emotion-name">CALM</div><div class="emotion-desc">Peaceful and focused</div></div>
+            <div class="emotion-card" data-emotion="frustrated"><div class="emotion-icon">😤</div><div class="emotion-name">FRUSTRATED</div><div class="emotion-desc">Feeling stuck?</div></div>
+        </div>
+        
+        <div class="emotion-row-center">
+            <div class="emotion-card" data-emotion="tired"><div class="emotion-icon">😴</div><div class="emotion-name">TIRED</div><div class="emotion-desc">Low energy?</div></div>
+            <div class="emotion-card" data-emotion="neutral"><div class="emotion-icon">😐</div><div class="emotion-name">NEUTRAL</div><div class="emotion-desc">Just okay</div></div>
+        </div>
+        
+        <!-- TIPS PANEL -->
+        <div class="tips-panel" id="tipsPanel" style="display: none;">
+            <div class="tips-header"><span class="tips-emotion-icon" id="tipsEmotionIcon">😰</span><h3 id="tipsEmotionTitle">STRESS RELIEF TIPS</h3><button class="close-tips" id="closeTipsBtn">✖</button></div>
+            <div class="tips-content" id="tipsContent"></div>
+        </div>
+        
+        <!-- ============= BRAIN FOCUS GAME (Fast Typing - ganti video) ============= -->
+        <div class="section-title">
+            <h2>🧠 Brain Focus — Neuro Training</h2>
+            <p class="subtitle-center">Type the word as fast as you can. Train your focus & reaction.</p>
+        </div>
+        
+        <div class="game-container-brain">
+            <div class="game-controls-brain">
+                <div class="level-buttons-brain">
+                    <button class="level-btn-brain" data-difficulty="easy">🌿 EASY</button>
+                    <button class="level-btn-brain" data-difficulty="medium">⚡ MEDIUM</button>
+                    <button class="level-btn-brain" data-difficulty="hard">🔥 HARD</button>
+                </div>
+                <div class="stats-brain">
+                    <div class="stat-brain"><div class="stat-brain-label">⏱ TIME</div><div class="stat-brain-value" id="gameTimer">60</div></div>
+                    <div class="stat-brain"><div class="stat-brain-label">📝 WORDS</div><div class="stat-brain-value" id="gameWordCount">0</div></div>
+                    <div class="stat-brain"><div class="stat-brain-label">⚡ WPM</div><div class="stat-brain-value" id="gameWPM">0</div></div>
+                </div>
+            </div>
+            
+            <div class="word-display-brain">
+                <div class="current-word-brain" id="gameCurrentWord">READY?</div>
+            </div>
+            
+            <input id="gameTypingInput" class="typing-input-brain" type="text" placeholder="Type the word here..." disabled autocomplete="off" spellcheck="false">
+            
+            <div class="stats-grid-brain">
+                <div class="stat-box-brain"><div class="stat-label-brain">✅ CORRECT</div><div class="stat-value-brain" id="gameCorrect">0</div></div>
+                <div class="stat-box-brain"><div class="stat-label-brain">❌ WRONG</div><div class="stat-value-brain" id="gameWrong">0</div></div>
+                <div class="stat-box-brain"><div class="stat-label-brain">📊 ACCURACY</div><div class="stat-value-brain" id="gameAccuracy">100%</div></div>
+                <div class="stat-box-brain"><div class="stat-label-brain">🔥 STREAK</div><div class="stat-value-brain" id="gameStreak">0</div></div>
+            </div>
+            
+            <div class="game-status-brain" id="gameStatus">Click START to begin</div>
+            
+            <div class="game-buttons-brain">
+                <button class="btn-brain" id="gameStartBtn">▶ START GAME</button>
+                <button class="btn-brain" id="gameRestartBtn" disabled>🔄 RESTART</button>
+            </div>
+        </div>
+        
+        <!-- ============= MEMORY MATCH GAME ============= -->
+        <div class="section-title"><h2>🎮 Memory Match Game</h2><p class="subtitle-center">Train your focus and reduce stress</p></div>
+        <div class="game-container">
+            <div class="game-controls">
+                <div class="level-buttons"><button class="level-btn" data-level="easy">🌿 EASY (4 pairs)</button><button class="level-btn" data-level="medium">⚡ MEDIUM (6 pairs)</button><button class="level-btn" data-level="hard">🔥 HARD (8 pairs)</button></div>
+                <div class="game-stats"><div class="moves-count">Moves: <span id="movesCount">0</span></div><div class="time-count">Time: <span id="timeCount">00:00</span></div><button class="reset-game-btn" id="resetGameBtn">🔄 Reset Game</button></div>
+            </div>
+            <div class="game-board" id="gameBoard"></div>
+            <div class="game-message" id="gameMessage"></div>
+        </div>
+        
+        <!-- QUOTES MODAL -->
+        <div id="quotesModal" class="modal-quotes">
+            <div class="modal-quotes-content">
+                <span class="modal-quotes-close" id="closeQuotesModal">&times;</span>
+                <h3>✨ Choose Your Wisdom Card ✨</h3>
+                <p>Pick ONE card to receive an inspiring quote</p>
+                <div class="card-deck" id="cardDeck"></div>
+                <div id="quoteDisplayArea" class="quote-display" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- GAME RESULT MODAL -->
+        <div id="gameResultModal" class="modal-result">
+            <div class="modal-result-content">
+                <span class="modal-result-close" id="closeGameModal">&times;</span>
+                <h3>🎉 GAME COMPLETE!</h3>
+                <div class="result-stats">
+                    <div class="result-row"><span>✅ Correct Words</span><span id="resultCorrect">0</span></div>
+                    <div class="result-row"><span>📊 Accuracy</span><span id="resultAccuracy">0%</span></div>
+                    <div class="result-row"><span>⚡ Speed (WPM)</span><span id="resultWPM">0</span></div>
+                    <div class="result-row"><span>🔥 Best Streak</span><span id="resultStreak">0</span></div>
+                </div>
+                <button class="close-result-btn" id="closeGameResultBtn">CONTINUE</button>
+            </div>
+        </div>
+        
+        <div class="footer-back"><a href="/dashboard" class="back-to-dashboard">← BACK TO DASHBOARD</a></div>
+    </div>
+    
+    <script>
+        let currentUser = null;
+        let cardSelected = false;
+        
+        const wisdomQuotes = [
+            "✨ Believe you can and you're halfway there. — Theodore Roosevelt",
+            "🌱 Every day may not be good, but there is something good in every day.",
+            "💪 You are stronger than you think and braver than you feel.",
+            "🧘 Peace begins with a single breath. Take one now.",
+            "🌟 Your present circumstances don't determine where you can go.",
+            "🎯 Small steps every day lead to big changes.",
+            "💙 You deserve kindness, especially from yourself.",
+            "🔥 Stress is not the enemy. How you respond makes all the difference."
+        ];
+        
+        const tipsDatabase = {
+            stress: [
+                { title: "🌬️ Deep Breathing", text: "Try the 4-7-8 technique: Inhale for 4 seconds, hold for 7, exhale for 8. Repeat 5 times." },
+                { title: "🚶 Take a Break", text: "Step away from screens. A 5-minute walk can reset your nervous system." },
+                { title: "💧 Stay Hydrated", text: "Dehydration can increase cortisol levels. Drink a glass of water slowly." }
+            ],
+            anxious: [
+                { title: "📝 Write It Down", text: "Get your worries out of your head and onto paper." },
+                { title: "🫂 Grounding Technique", text: "Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste." },
+                { title: "⏸️ Pause", text: "Take a 2-minute break. Step away from what's causing anxiety." }
+            ],
+            calm: [
+                { title: "✨ Maintain It", text: "You're in a great state. Use this calm energy to tackle important tasks." },
+                { title: "📖 Read", text: "Read something inspiring or educational for 10 minutes." },
+                { title: "🤝 Connect", text: "Reach out to someone you care about." }
+            ],
+            frustrated: [
+                { title: "🔨 Step Back", text: "Frustration means you care. Take 3 deep breaths before continuing." },
+                { title: "🧩 Break It Down", text: "Split your problem into smaller pieces. Solve one small piece first." },
+                { title: "💪 Physical Release", text: "Do 10 jumping jacks or push-ups to release pent-up energy." }
+            ],
+            tired: [
+                { title: "😴 Power Nap", text: "Even 10 minutes of eyes-closed rest can boost alertness." },
+                { title: "💧 Hydrate", text: "Fatigue often comes from dehydration. Drink cold water." },
+                { title: "🚶 Light Movement", text: "Gentle stretching or a short walk can increase energy." }
+            ],
+            neutral: [
+                { title: "🌟 Small Win", text: "Complete one small task to build momentum." },
+                { title: "📅 Plan", text: "List 3 things you want to accomplish today." },
+                { title: "🎧 Audio Boost", text: "Listen to an upbeat podcast or music." }
+            ]
+        };
+        
+        // ============= BRAIN FOCUS GAME =============
+        const wordPools = {
+            easy: ['FOCUS', 'BRAIN', 'MIND', 'PEACE', 'CALM', 'REST', 'CARE', 'HOPE', 'JOY', 'KIND'],
+            medium: ['CLARITY', 'PATIENCE', 'MINDFUL', 'BALANCE', 'HARMONY', 'SERENE', 'GRATEFUL', 'PEACEFUL'],
+            hard: ['TRANQUILITY', 'MINDFULNESS', 'RESILIENCE', 'CONCENTRATION', 'MEDITATION', 'AWARENESS']
+        };
+        
+        let gameDifficulty = 'easy';
+        let gameActive = false;
+        let gameCurrentWord = '';
+        let gameWordsTyped = 0;
+        let gameCorrect = 0;
+        let gameWrong = 0;
+        let gameStreak = 0;
+        let gameBestStreak = 0;
+        let gameTimeLeft = 60;
+        let gameTimerInterval = null;
+        let gameStartTime = null;
+        let gameWordPool = [];
+        
+        function shuffleArrayGame(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        function initGameWords() {
+            gameWordPool = shuffleArrayGame([...wordPools[gameDifficulty]]);
+        }
+        
+        function getNextGameWord() {
+            if (gameWordPool.length === 0) {
+                gameWordPool = shuffleArrayGame([...wordPools[gameDifficulty]]);
+            }
+            return gameWordPool.pop();
+        }
+        
+        function updateGameUI() {
+            document.getElementById('gameTimer').textContent = gameTimeLeft;
+            document.getElementById('gameWordCount').textContent = gameWordsTyped;
+            document.getElementById('gameCorrect').textContent = gameCorrect;
+            document.getElementById('gameWrong').textContent = gameWrong;
+            document.getElementById('gameStreak').textContent = gameBestStreak;
+            const accuracy = gameWordsTyped === 0 ? 100 : Math.round((gameCorrect / gameWordsTyped) * 100);
+            document.getElementById('gameAccuracy').textContent = accuracy + '%';
+            const elapsedMinutes = Math.max(0.01, (Date.now() - gameStartTime) / 60000);
+            const wpm = Math.round(gameCorrect / elapsedMinutes);
+            if (!isNaN(wpm)) document.getElementById('gameWPM').textContent = wpm;
+        }
+        
+        function gameComplete() {
+            gameActive = false;
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            document.getElementById('gameTypingInput').disabled = true;
+            document.getElementById('gameStartBtn').disabled = false;
+            document.getElementById('gameRestartBtn').disabled = false;
+            document.getElementById('gameStatus').innerHTML = '🎮 Game Over! Click START to play again';
+            document.getElementById('gameCurrentWord').textContent = 'FINISHED!';
+            
+            const accuracy = gameWordsTyped === 0 ? 100 : Math.round((gameCorrect / gameWordsTyped) * 100);
+            const elapsedMinutes = Math.max(0.01, (Date.now() - gameStartTime) / 60000);
+            const wpm = Math.round(gameCorrect / elapsedMinutes);
+            
+            document.getElementById('resultCorrect').textContent = gameCorrect;
+            document.getElementById('resultAccuracy').textContent = accuracy + '%';
+            document.getElementById('resultWPM').textContent = wpm || 0;
+            document.getElementById('resultStreak').textContent = gameBestStreak;
+            document.getElementById('gameResultModal').style.display = 'block';
+            
+            for(let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    confetti({ particleCount: 150, spread: 120, origin: { y: 0.3, x: 0.2 + (i * 0.3) }, colors: ['#00d4ff', '#00ff88', '#ffaa00'] });
+                }, i * 200);
+            }
+            setTimeout(() => {
+                confetti({ particleCount: 300, spread: 180, origin: { y: 0.5 }, colors: ['#00d4ff', '#00ff88', '#ffffff'] });
+            }, 600);
+        }
+        
+        function startGame() {
+            if (gameActive) return;
+            gameActive = true;
+            gameWordsTyped = 0;
+            gameCorrect = 0;
+            gameWrong = 0;
+            gameStreak = 0;
+            gameBestStreak = 0;
+            gameTimeLeft = gameDifficulty === 'easy' ? 60 : (gameDifficulty === 'medium' ? 45 : 30);
+            gameStartTime = Date.now();
+            
+            initGameWords();
+            gameCurrentWord = getNextGameWord();
+            document.getElementById('gameCurrentWord').textContent = gameCurrentWord;
+            document.getElementById('gameTypingInput').value = '';
+            document.getElementById('gameTypingInput').disabled = false;
+            document.getElementById('gameTypingInput').focus();
+            document.getElementById('gameStartBtn').disabled = true;
+            document.getElementById('gameRestartBtn').disabled = false;
+            document.getElementById('gameStatus').innerHTML = '⚡ GAME ACTIVE — TYPE FAST! ⚡';
+            
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            gameTimerInterval = setInterval(() => {
+                if (gameActive && gameTimeLeft > 0) {
+                    gameTimeLeft--;
+                    document.getElementById('gameTimer').textContent = gameTimeLeft;
+                    if (gameTimeLeft <= 0) {
+                        gameComplete();
+                    }
+                }
+                updateGameUI();
+            }, 1000);
+            updateGameUI();
+        }
+        
+        function checkGameWord() {
+            if (!gameActive) return;
+            const typed = document.getElementById('gameTypingInput').value.trim().toUpperCase();
+            const inputEl = document.getElementById('gameTypingInput');
+            if (typed === gameCurrentWord) {
+                gameCorrect++;
+                gameWordsTyped++;
+                gameStreak++;
+                if (gameStreak > gameBestStreak) gameBestStreak = gameStreak;
+                inputEl.classList.add('correct');
+                setTimeout(() => inputEl.classList.remove('correct'), 200);
+                inputEl.value = '';
+                gameCurrentWord = getNextGameWord();
+                document.getElementById('gameCurrentWord').textContent = gameCurrentWord;
+            } else if (typed.length >= gameCurrentWord.length) {
+                gameWrong++;
+                gameWordsTyped++;
+                gameStreak = 0;
+                inputEl.classList.add('wrong');
+                setTimeout(() => inputEl.classList.remove('wrong'), 200);
+                inputEl.value = '';
+                gameCurrentWord = getNextGameWord();
+                document.getElementById('gameCurrentWord').textContent = gameCurrentWord;
+            }
+            updateGameUI();
+        }
+        
+        function restartGame() {
+            if (gameTimerInterval) clearInterval(gameTimerInterval);
+            gameActive = false;
+            gameWordsTyped = 0;
+            gameCorrect = 0;
+            gameWrong = 0;
+            gameStreak = 0;
+            gameBestStreak = 0;
+            gameTimeLeft = gameDifficulty === 'easy' ? 60 : (gameDifficulty === 'medium' ? 45 : 30);
+            document.getElementById('gameTimer').textContent = gameTimeLeft;
+            document.getElementById('gameTypingInput').value = '';
+            document.getElementById('gameTypingInput').disabled = true;
+            document.getElementById('gameStartBtn').disabled = false;
+            document.getElementById('gameRestartBtn').disabled = true;
+            document.getElementById('gameCurrentWord').textContent = 'READY?';
+            document.getElementById('gameStatus').innerHTML = 'Click START to begin';
+            updateGameUI();
+        }
+        
+        function setupGameControls() {
+            document.querySelectorAll('.level-btn-brain').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (gameActive) return;
+                    document.querySelectorAll('.level-btn-brain').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    gameDifficulty = btn.dataset.difficulty;
+                    gameTimeLeft = gameDifficulty === 'easy' ? 60 : (gameDifficulty === 'medium' ? 45 : 30);
+                    document.getElementById('gameTimer').textContent = gameTimeLeft;
+                    restartGame();
+                });
+            });
+            document.getElementById('gameStartBtn').addEventListener('click', startGame);
+            document.getElementById('gameRestartBtn').addEventListener('click', restartGame);
+            document.getElementById('gameTypingInput').addEventListener('input', checkGameWord);
+            document.getElementById('gameTypingInput').addEventListener('keydown', (e) => { if (e.key === ' ') e.preventDefault(); });
+            
+            const closeModal = document.getElementById('closeGameModal');
+            const closeBtn = document.getElementById('closeGameResultBtn');
+            const modal = document.getElementById('gameResultModal');
+            closeModal.onclick = () => modal.style.display = 'none';
+            closeBtn.onclick = () => modal.style.display = 'none';
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+            
+            document.querySelector('.level-btn-brain[data-difficulty="easy"]').classList.add('active');
+        }
+        
+        // ============= EMOTION TIPS =============
+        function setupEmotionCards() {
+            document.querySelectorAll('.emotion-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const emotion = card.dataset.emotion;
+                    const tips = tipsDatabase[emotion];
+                    if (!tips) return;
+                    const emotionIcons = { stress:'😰', anxious:'😟', calm:'😌', frustrated:'😤', tired:'😴', neutral:'😐' };
+                    const emotionTitles = { stress:'STRESS RELIEF TIPS', anxious:'ANXIETY MANAGEMENT', calm:'MAINTAIN YOUR CALM', frustrated:'OVERCOMING FRUSTRATION', tired:'ENERGY BOOST TIPS', neutral:'WELLNESS TIPS' };
+                    document.getElementById('tipsEmotionIcon').innerHTML = emotionIcons[emotion];
+                    document.getElementById('tipsEmotionTitle').innerHTML = emotionTitles[emotion];
+                    const container = document.getElementById('tipsContent');
+                    container.innerHTML = '';
+                    tips.forEach(tip => { container.innerHTML += `<div class="tip-item"><div class="tip-title">${tip.title}</div><div class="tip-text">${tip.text}</div></div>`; });
+                    document.getElementById('tipsPanel').style.display = 'block';
+                    document.getElementById('tipsPanel').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+        
+        function setupCloseTips() {
+            document.getElementById('closeTipsBtn').addEventListener('click', () => { document.getElementById('tipsPanel').style.display = 'none'; });
+        }
+        
+        // ============= MEMORY MATCH GAME =============
+        let currentLevel = 'easy';
+        let cards = [], flippedCards = [], matchedPairs = 0, moves = 0, gameStarted = false, timerInterval = null, seconds = 0, lockBoard = false;
+        
+        const gameConfig = {
+            easy: { pairs: 4, words: ['KIND', 'RELAX', 'CALM', 'PEACE'] },
+            medium: { pairs: 6, words: ['KIND', 'RELAX', 'CALM', 'PEACE', 'HAPPY', 'SERENE'] },
+            hard: { pairs: 8, words: ['KIND', 'RELAX', 'CALM', 'PEACE', 'HAPPY', 'SERENE', 'JOYFUL', 'GRATEFUL'] }
+        };
+        
+        function initMemoryGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            const words = [...gameConfig[currentLevel].words, ...gameConfig[currentLevel].words];
+            for (let i = words.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [words[i], words[j]] = [words[j], words[i]]; }
+            cards = words.map((word, index) => ({ id: index, word, flipped: false, matched: false }));
+            matchedPairs = 0; moves = 0; flippedCards = []; lockBoard = false; gameStarted = false; seconds = 0;
+            document.getElementById('movesCount').innerText = moves;
+            document.getElementById('timeCount').innerText = '00:00';
+            document.getElementById('gameMessage').innerHTML = '';
+            renderBoard();
+        }
+        
+        function renderBoard() {
+            const board = document.getElementById('gameBoard');
+            board.className = `game-board ${currentLevel}`;
+            board.innerHTML = '';
+            cards.forEach(card => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+                if (card.flipped || card.matched) cardDiv.classList.add('flipped');
+                if (card.matched) cardDiv.classList.add('matched');
+                cardDiv.innerHTML = (card.flipped || card.matched) ? card.word : '?';
+                cardDiv.addEventListener('click', () => onCardClick(card.id));
+                board.appendChild(cardDiv);
+            });
+        }
+        
+        function onCardClick(id) {
+            if (lockBoard) return;
+            const card = cards[id];
+            if (card.matched || card.flipped) return;
+            if (!gameStarted) { startMemoryTimer(); gameStarted = true; }
+            card.flipped = true;
+            renderBoard();
+            flippedCards.push(card);
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('movesCount').innerText = moves;
+                checkMatch();
+            }
+        }
+        
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            if (card1.word === card2.word) {
+                card1.matched = true; card2.matched = true;
+                matchedPairs++;
+                flippedCards = [];
+                if (matchedPairs === gameConfig[currentLevel].pairs) { memoryGameComplete(); } else { renderBoard(); }
+            } else {
+                lockBoard = true;
+                setTimeout(() => {
+                    card1.flipped = false; card2.flipped = false;
+                    flippedCards = []; lockBoard = false;
+                    renderBoard();
+                }, 800);
+            }
+        }
+        
+        function startMemoryTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                document.getElementById('timeCount').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+        
+        function memoryGameComplete() {
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('gameMessage').innerHTML = '🎉 CONGRATULATIONS! YOU COMPLETED THE GAME! 🎉';
+            for(let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    confetti({ particleCount: 150, spread: 120, origin: { y: 0.3, x: 0.2 + (i * 0.3) }, colors: ['#00d4ff', '#00ff88', '#ffaa00'] });
+                }, i * 200);
+            }
+            setTimeout(() => { showQuotesModal(); }, 2000);
+        }
+        
+        function showQuotesModal() {
+            cardSelected = false;
+            const deck = document.getElementById('cardDeck');
+            const quoteArea = document.getElementById('quoteDisplayArea');
+            quoteArea.style.display = 'none';
+            quoteArea.innerHTML = '';
+            const numbers = ['1', '2', '3', '4', '5'];
+            for (let i = numbers.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [numbers[i], numbers[j]] = [numbers[j], numbers[i]]; }
+            deck.innerHTML = '';
+            numbers.forEach(num => {
+                const card = document.createElement('div');
+                card.className = 'wisdom-card';
+                card.innerText = num;
+                card.addEventListener('click', () => {
+                    if (cardSelected) return;
+                    cardSelected = true;
+                    document.querySelectorAll('.wisdom-card').forEach(c => {
+                        c.style.pointerEvents = 'none';
+                        c.classList.add('disabled');
+                    });
+                    const randomQuote = wisdomQuotes[Math.floor(Math.random() * wisdomQuotes.length)];
+                    quoteArea.style.display = 'block';
+                    quoteArea.innerHTML = `<p>✨ "${randomQuote}"</p><small>— NeuroPrint AI</small>`;
+                });
+                deck.appendChild(card);
+            });
+            document.getElementById('quotesModal').style.display = 'block';
+        }
+        
+        function setupMemoryGameControls() {
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (gameStarted && matchedPairs < gameConfig[currentLevel].pairs) return;
+                    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLevel = btn.dataset.level;
+                    initMemoryGame();
+                });
+            });
+            document.getElementById('resetGameBtn').addEventListener('click', () => { initMemoryGame(); });
+            document.querySelector('.level-btn[data-level="easy"]').click();
+        }
+        
+        function setupQuotesModalClose() {
+            const modal = document.getElementById('quotesModal');
+            const closeBtn = document.getElementById('closeQuotesModal');
+            closeBtn.onclick = () => { modal.style.display = 'none'; cardSelected = false; };
+            window.onclick = (e) => { if (e.target === modal) { modal.style.display = 'none'; cardSelected = false; } };
+        }
+        
+        // ============= PARTICLE ANIMATION =============
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.5 + 0.2, color: Math.random() > 0.6 ? '#00d4ff' : '#00ff88'
+                });
+            }
+        }
+        
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fill();
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+        
+        async function loadUser() {
+            const userStr = localStorage.getItem('neuroprint_user');
+            if (!userStr) { window.location.href = '/login'; return; }
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').innerHTML = `👤 ${currentUser.name.toUpperCase()}`;
+        }
+        
+        function logout() { localStorage.removeItem('neuroprint_user'); window.location.href = '/login'; }
+        
+        function init() {
+            initParticles();
+            drawParticles();
+            setupEmotionCards();
+            setupCloseTips();
+            setupGameControls();
+            setupMemoryGameControls();
+            setupQuotesModalClose();
+        }
+        
+        loadUser().then(() => { init(); });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint AI | Personal Security Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="hub-container">
+        <div class="neural-bg"></div>
+        
+        <!-- HEADER -->
+        <div class="hub-header">
+            <div class="logo-section">
+                <div class="logo">
+                    <span class="neon-text">NEUROPRINT AI</span>
+                    <span class="subtitle">PERSONAL SECURITY HUB</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="live-status">
+                    <span class="live-dot"></span>
+                    <span class="live-text">MY HUB</span>
+                </div>
+                <span class="user-name" id="userName">👤 LOADING...</span>
+                <button class="logout-btn" onclick="logout()">🔓 LOGOUT</button>
+            </div>
+        </div>
+        
+        <!-- WELCOME SECTION -->
+        <div class="welcome-section" id="welcomeSection">
+            <div class="welcome-icon">🧠</div>
+            <div class="welcome-text">
+                <span class="welcome-greeting" id="greetingMessage">Welcome back,</span>
+                <span class="welcome-name" id="welcomeName">—</span>
+            </div>
+        </div>
+        
+        <!-- STATS + MOOD SCORE ROW -->
+        <div class="stats-mood-row">
+            <div class="stats-two">
+                <div class="stat-card-hover stat-total">
+                    <div class="stat-icon">🔬</div>
+                    <div class="stat-value" id="totalScans">0</div>
+                    <div class="stat-label">TOTAL SCANS</div>
+                    <div class="stat-progress-bar">
+                        <div class="progress-fill" id="progressTotalFill" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="stat-card-hover stat-calm">
+                    <div class="stat-icon">😌</div>
+                    <div class="stat-value" id="calmCount">0%</div>
+                    <div class="stat-label">CALM SESSIONS</div>
+                    <div class="stat-progress-bar">
+                        <div class="progress-fill" id="progressCalmFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mood-ring-card">
+                <div class="card-label">📊 MY MOOD SCORE</div>
+                <div class="ring-container">
+                    <canvas id="moodRing" width="120" height="120"></canvas>
+                    <div class="ring-value" id="moodScoreValue">0%</div>
+                </div>
+                <div class="ring-status" id="moodStatus">—</div>
+            </div>
+        </div>
+        
+        <!-- EMOTION TIMELINE CHART -->
+        <div class="chart-card-large">
+            <h3>📈 MY EMOTION TIMELINE (LAST 7 DAYS)</h3>
+            <canvas id="emotionTimelineChart" width="800" height="250"></canvas>
+        </div>
+        
+        <!-- RULE-BASED WELLNESS TIP -->
+        <div class="wellness-tip-card">
+            <div class="tip-icon">🌿 WELLNESS TIP</div>
+            <div class="tip-message" id="wellnessTip">Loading your personalized tip...</div>
+        </div>
+        
+        <!-- BREATHING EXERCISE SECTION - CENTERED -->
+        <div class="breath-section-centered">
+            <button class="breath-btn" id="breathBtn">
+                🧘 START BREATHING EXERCISE →
+            </button>
+        </div>
+        
+        <!-- FOOTER BACK BUTTON -->
+        <div class="footer-back">
+            <a href="/dashboard" class="back-to-dashboard">← BACK TO DASHBOARD</a>
+        </div>
+    </div>
+    
+    <!-- BREATHING MODAL - ELEGANT REDESIGN -->
+    <div id="breathModal" class="modal">
+        <div class="modal-content breath-modal">
+            <span class="modal-close">✖</span>
+            
+            <div class="breath-header">
+                <span class="breath-icon">🧘</span>
+                <h3>Guided Breathing</h3>
+                <p class="breath-subtitle">Find your calm in 60 seconds</p>
+            </div>
+            
+            <div class="breath-main">
+                <div class="breath-circle-container">
+                    <svg class="breath-svg" width="220" height="220" viewBox="0 0 220 220">
+                        <circle class="breath-bg-circle" cx="110" cy="110" r="100" fill="none" stroke="#2a2a3a" stroke-width="6"/>
+                        <circle class="breath-progress-circle" id="breathProgressCircle" cx="110" cy="110" r="100" fill="none" stroke="url(#breathGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" transform="rotate(-90 110 110)"/>
+                        <defs>
+                            <linearGradient id="breathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#00ff88"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="breath-inner-circle" id="breathInnerCircle">
+                        <div class="breath-phase-text" id="breathPhaseText">INHALE</div>
+                        <div class="breath-countdown" id="breathCountdown">4</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="breath-steps">
+                <div class="breath-step-item" id="stepInhaleItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⬆️</div>
+                    <div class="step-name">INHALE</div>
+                    <div class="step-duration">4s</div>
+                </div>
+                <div class="breath-step-line"></div>
+                <div class="breath-step-item" id="stepHoldItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⏸️</div>
+                    <div class="step-name">HOLD</div>
+                    <div class="step-duration">4s</div>
+                </div>
+                <div class="breath-step-line"></div>
+                <div class="breath-step-item" id="stepExhaleItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⬇️</div>
+                    <div class="step-name">EXHALE</div>
+                    <div class="step-duration">6s</div>
+                </div>
+            </div>
+            
+            <div class="breath-footer">
+                <div class="breath-total-timer" id="breathTotalTimer">00:00</div>
+                <div class="breath-cycle-count" id="breathCycleCount">CYCLE 1</div>
+            </div>
+            
+            <div class="breath-actions">
+                <button class="breath-close-btn" id="breathCloseBtn">✨ COMPLETE SESSION</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hub-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 18px 30px;
+            border-radius: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .neon-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            display: block;
+            font-size: 16px;
+            color: #888;
+            margin-top: 4px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+        
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #00ff88; }
+            50% { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 15px #00ff88; }
+        }
+        
+        .live-text {
+            color: #00ff88;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .user-name {
+            color: #00d4ff;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 16px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 0, 64, 0.15);
+            border: 1.5px solid #ff0040;
+            color: #ff0040;
+            padding: 6px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 0, 64, 0.4);
+            box-shadow: 0 0 15px rgba(255, 0, 64, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 255, 136, 0.05));
+            border-radius: 30px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .welcome-section:hover {
+            transform: translateY(-3px);
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+        
+        .welcome-icon {
+            font-size: 48px;
+        }
+        
+        .welcome-text {
+            flex: 1;
+        }
+        
+        .welcome-greeting {
+            display: block;
+            font-size: 18px;
+            color: #aaa;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .welcome-name {
+            display: block;
+            font-size: 25px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .stats-mood-row {
+            display: grid;
+            grid-template-columns: 1fr 0.6fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-two {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .stat-card-hover {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .stat-card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stat-total:hover { border-color: #00d4ff; box-shadow: 0 0 25px rgba(0, 212, 255, 0.3); }
+        .stat-calm:hover { border-color: #00ff88; box-shadow: 0 0 25px rgba(0, 255, 136, 0.3); }
+        
+        .stat-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .stat-card-hover:hover .stat-icon {
+            transform: scale(1.1);
+        }
+        
+        .stat-value {
+            font-size: 38px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .stat-total .stat-value { color: #00d4ff; }
+        .stat-calm .stat-value { color: #00ff88; }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 11px;
+            margin-top: 8px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .stat-progress-bar {
+            margin-top: 15px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+        
+        .stat-total .progress-fill { background: linear-gradient(90deg, #00d4ff, #00ff88); }
+        .stat-calm .progress-fill { background: linear-gradient(90deg, #00ff88, #00d4ff); }
+        
+        .mood-ring-card {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+        }
+        
+        .mood-ring-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+        }
+        
+        .card-label {
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            font-size: 17px;
+            margin-bottom: 15px;
+        }
+        
+        .ring-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .ring-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            color: #00d4ff;
+        }
+        
+        .ring-status {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .chart-card-large {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+        }
+        
+        .chart-card-large:hover {
+            border-color: #00d4ff55;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+        
+        .chart-card-large h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .wellness-tip-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(0, 255, 136, 0.06));
+            border-radius: 30px;
+            padding: 22px 28px;
+            margin-bottom: 35px;
+            border-left: 4px solid #00ff88;
+            transition: all 0.3s;
+        }
+        
+        .wellness-tip-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.15);
+        }
+        
+        .tip-icon {
+            color: #00ff88;
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .tip-message {
+            color: #eee;
+            font-size: 15px;
+            line-height: 1.5;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .breath-section-centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .breath-btn {
+            background: linear-gradient(135deg, #00d4ff20, #00ff8820);
+            border: 1.5px solid #00d4ff;
+            color: #00d4ff;
+            padding: 14px 40px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .breath-btn:hover {
+            background: linear-gradient(135deg, #00d4ff40, #00ff8840);
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        .footer-back {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .back-to-dashboard {
+            display: inline-block;
+            color: #00d4ff;
+            text-decoration: none;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 14px;
+            padding: 10px 24px;
+            border: 1px solid #00d4ff;
+            border-radius: 40px;
+            transition: all 0.3s;
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        .back-to-dashboard:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* BREATHING MODAL - ELEGANT REDESIGN */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.94);
+            backdrop-filter: blur(16px);
+        }
+        
+        .modal-content.breath-modal {
+            background: linear-gradient(145deg, rgba(12, 12, 22, 0.96), rgba(8, 8, 16, 0.98));
+            backdrop-filter: blur(20px);
+            margin: 5% auto;
+            padding: 30px 30px 40px;
+            border-radius: 60px;
+            width: 520px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.35);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+        
+        @keyframes modalPop {
+            from { transform: scale(0.92) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        
+        .modal-close {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+            transition: all 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .modal-close:hover {
+            color: #ff0040;
+            background: rgba(255, 0, 64, 0.15);
+        }
+        
+        .breath-header {
+            margin-bottom: 20px;
+        }
+        
+        .breath-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .breath-header h3 {
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            margin: 5px 0;
+            letter-spacing: 1px;
+        }
+        
+        .breath-subtitle {
+            color: #888;
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 4px;
+        }
+        
+        .breath-main {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .breath-circle-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+        }
+        
+        .breath-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .breath-bg-circle {
+            stroke: #2a2a3a;
+        }
+        
+        .breath-progress-circle {
+            transition: stroke-dashoffset 0.05s linear;
+            filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.5));
+        }
+        
+        .breath-inner-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(0, 255, 136, 0.08));
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            backdrop-filter: blur(4px);
+        }
+        
+        .breath-phase-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            color: #00d4ff;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        
+        .breath-countdown {
+            font-family: 'Orbitron', monospace;
+            font-size: 42px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        
+        .breath-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 25px 0 20px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 80px;
+        }
+        
+        .breath-step-item {
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 40px;
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+        
+        .breath-step-item.active {
+            opacity: 1;
+            background: rgba(0, 212, 255, 0.15);
+            box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+        }
+        
+        .step-indicator {
+            width: 6px;
+            height: 6px;
+            background: #00d4ff;
+            border-radius: 50%;
+            margin: 0 auto 6px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .breath-step-item.active .step-indicator {
+            opacity: 1;
+        }
+        
+        .step-icon {
+            font-size: 22px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .step-name {
+            font-size: 9px;
+            font-weight: 700;
+            color: #ccc;
+            letter-spacing: 1px;
+        }
+        
+        .step-duration {
+            font-size: 10px;
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            margin-top: 3px;
+        }
+        
+        .breath-step-line {
+            width: 30px;
+            height: 1px;
+            background: linear-gradient(90deg, #2a2a3a, #2a2a3a);
+        }
+        
+        .breath-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            margin: 15px 0 20px;
+        }
+        
+        .breath-total-timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            color: #00ff88;
+            letter-spacing: 2px;
+        }
+        
+        .breath-cycle-count {
+            font-size: 11px;
+            color: #aaa;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .breath-actions {
+            margin-top: 10px;
+        }
+        
+        .breath-close-btn {
+            background: linear-gradient(135deg, #00d4ff20, #00ff8820);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .breath-close-btn:hover {
+            background: linear-gradient(135deg, #00d4ff40, #00ff8840);
+            transform: scale(1.02);
+            box-shadow: 0 0 18px rgba(0, 212, 255, 0.4);
+        }
+        
+        @media (max-width: 600px) {
+            .stats-mood-row { grid-template-columns: 1fr; }
+            .stats-two { grid-template-columns: repeat(2, 1fr); }
+            .modal-content.breath-modal { padding: 25px 20px 30px; }
+            .breath-steps { gap: 4px; }
+            .breath-step-line { width: 15px; }
+            .step-icon { font-size: 18px; }
+        }
+    </style>
+    
+    <script>
+        let currentUser = null;
+        let userScans = [];
+        let breathAnimationRunning = false;
+        let breathAnimationFrame = null;
+        let breathTimerInterval = null;
+        
+        async function loadUser() {
+            const userStr = localStorage.getItem('neuroprint_user');
+            if (!userStr) {
+                window.location.href = '/login';
+                return;
+            }
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').innerHTML = `👤 ${currentUser.name.toUpperCase()}`;
+            document.getElementById('welcomeName').innerHTML = currentUser.name.toUpperCase();
+            
+            const hour = new Date().getHours();
+            let greeting = "Welcome back";
+            if (hour < 12) greeting = "Good morning";
+            else if (hour < 18) greeting = "Good afternoon";
+            else greeting = "Good evening";
+            document.getElementById('greetingMessage').innerHTML = greeting + ",";
+        }
+        
+        async function loadUserData() {
+            const scansRes = await fetch(`/api/user/${currentUser.id}/scans`);
+            const scansData = await scansRes.json();
+            if (scansData.success) {
+                userScans = scansData.scans || [];
+                updateStatsAndMood();
+                updateTimelineChart();
+                updateWellnessTip();
+            }
+        }
+        
+        function updateStatsAndMood() {
+            const total = userScans.length;
+            let calmCount = 0;
+            let riskSum = 0;
+            
+            userScans.forEach(scan => {
+                if (scan.emotion_estimate === 'Confident / Calm' || scan.emotion_estimate === 'Efficient') {
+                    calmCount++;
+                }
+                if (scan.risk_level === 'High') riskSum += 80;
+                else if (scan.risk_level === 'Medium') riskSum += 50;
+                else riskSum += 20;
+            });
+            
+            const calmPercent = total > 0 ? Math.round((calmCount / total) * 100) : 0;
+            const avgRisk = total > 0 ? Math.round(riskSum / total) : 0;
+            const moodScore = 100 - avgRisk;
+            
+            document.getElementById('totalScans').innerHTML = total;
+            document.getElementById('calmCount').innerHTML = calmPercent + '%';
+            document.getElementById('progressTotalFill').style.width = total > 0 ? '100%' : '0%';
+            document.getElementById('progressCalmFill').style.width = calmPercent + '%';
+            
+            document.getElementById('moodScoreValue').innerHTML = moodScore + '%';
+            
+            let moodText = '';
+            let moodColor = '';
+            if (moodScore >= 70) {
+                moodText = '🌟 EXCELLENT MOOD — Keep shining!';
+                moodColor = '#00ff88';
+            } else if (moodScore >= 40) {
+                moodText = '🟡 MODERATE MOOD — Take small breaks';
+                moodColor = '#ffaa00';
+            } else {
+                moodText = '🔴 LOW MOOD — Consider self-care activities';
+                moodColor = '#ff0040';
+            }
+            document.getElementById('moodStatus').innerHTML = moodText;
+            document.getElementById('moodStatus').style.color = moodColor;
+            
+            updateMoodRing(moodScore);
+        }
+        
+        function updateMoodRing(percent) {
+            const canvas = document.getElementById('moodRing');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = 60, centerY = 60, radius = 50;
+            const startAngle = -0.5 * Math.PI;
+            const endAngle = startAngle + (percent / 100) * 2 * Math.PI;
+            
+            ctx.clearRect(0, 0, 120, 120);
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            let gradient = ctx.createLinearGradient(0, 0, 120, 120);
+            if (percent >= 70) {
+                gradient.addColorStop(0, '#00ff88');
+                gradient.addColorStop(1, '#00d4ff');
+            } else if (percent >= 40) {
+                gradient.addColorStop(0, '#ffaa00');
+                gradient.addColorStop(1, '#00d4ff');
+            } else {
+                gradient.addColorStop(0, '#ff0040');
+                gradient.addColorStop(1, '#ffaa00');
+            }
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 8;
+            ctx.stroke();
+        }
+        
+        function updateTimelineChart() {
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last7Days.push(days[date.getDay()]);
+            }
+            
+            const stressData = last7Days.map((day, idx) => {
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() - (6 - idx));
+                const targetDay = targetDate.getDay();
+                let count = 0;
+                if (userScans && userScans.length > 0) {
+                    userScans.forEach(scan => {
+                        const scanDate = new Date(scan.scanned_at);
+                        if (scanDate.getDay() === targetDay && 
+                            (scan.emotion_estimate === 'Stress' || scan.emotion_estimate === 'Anxious' || scan.emotion_estimate === 'Frustrated')) {
+                            count++;
+                        }
+                    });
+                }
+                return count;
+            });
+            
+            const calmData = last7Days.map((day, idx) => {
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() - (6 - idx));
+                const targetDay = targetDate.getDay();
+                let count = 0;
+                if (userScans && userScans.length > 0) {
+                    userScans.forEach(scan => {
+                        const scanDate = new Date(scan.scanned_at);
+                        if (scanDate.getDay() === targetDay && 
+                            (scan.emotion_estimate === 'Confident / Calm' || scan.emotion_estimate === 'Efficient')) {
+                            count++;
+                        }
+                    });
+                }
+                return count;
+            });
+            
+            const canvas = document.getElementById('emotionTimelineChart');
+            if (!canvas) return;
+            
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) existingChart.destroy();
+            
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last7Days,
+                    datasets: [
+                        {
+                            label: '😰 STRESS / ANXIOUS',
+                            data: stressData,
+                            borderColor: '#ff0040',
+                            backgroundColor: 'rgba(255, 0, 64, 0.08)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 5,
+                            pointHoverRadius: 8
+                        },
+                        {
+                            label: '😌 CALM / CONFIDENT',
+                            data: calmData,
+                            borderColor: '#00ff88',
+                            backgroundColor: 'rgba(0, 255, 136, 0.08)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 5,
+                            pointHoverRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#fff', font: { size: 11 } } }
+                    },
+                    scales: {
+                        y: { ticks: { color: '#aaa', stepSize: 1 }, grid: { color: '#222' } },
+                        x: { ticks: { color: '#00d4ff', font: { size: 11 } }, grid: { color: '#222' } }
+                    }
+                }
+            });
+        }
+        
+        function updateWellnessTip() {
+            if (userScans.length === 0) {
+                document.getElementById('wellnessTip').innerHTML = '📭 Complete more authentication scans to receive personalized wellness insights.';
+                return;
+            }
+            
+            const totalScans = userScans.length;
+            const calmScans = userScans.filter(s => s.emotion_estimate === 'Confident / Calm' || s.emotion_estimate === 'Efficient').length;
+            const stressScans = userScans.filter(s => s.emotion_estimate === 'Stress' || s.emotion_estimate === 'Anxious').length;
+            const calmRate = (calmScans / totalScans) * 100;
+            const stressRate = (stressScans / totalScans) * 100;
+            
+            let tip = '';
+            
+            if (calmRate > 70) {
+                tip = '🌟 EXCELLENT! Your calm session rate is outstanding. You are demonstrating strong emotional regulation. Keep maintaining this positive behavior pattern.';
+            } else if (calmRate > 50) {
+                tip = '👍 GOOD PROGRESS! You have more calm sessions than stressed ones. Try adding a 2-minute breathing exercise before important authentications.';
+            } else if (stressRate > 50) {
+                tip = '🧠 NOTICE: Your stress indicators are above average. Consider taking short breaks between tasks. Even 5 minutes of walking can help reduce tension.';
+            } else if (totalScans < 5) {
+                tip = '📊 BUILDING PATTERN: You need more scans for accurate analysis. Continue using NeuroPrint AI regularly for better wellness insights.';
+            } else {
+                tip = '⚖️ BALANCED STATE: Your emotional patterns show healthy variation. Remember to stay hydrated and maintain regular sleep schedules for optimal cognitive performance.';
+            }
+            
+            document.getElementById('wellnessTip').innerHTML = tip;
+        }
+        
+        // ELEGANT BREATHING EXERCISE
+        function setupBreathingModal() {
+            const modal = document.getElementById('breathModal');
+            const btn = document.getElementById('breathBtn');
+            const closeBtn = document.querySelector('.modal-close');
+            const closeSessionBtn = document.getElementById('breathCloseBtn');
+            const breathPhaseText = document.getElementById('breathPhaseText');
+            const breathCountdown = document.getElementById('breathCountdown');
+            const breathTotalTimer = document.getElementById('breathTotalTimer');
+            const breathCycleCount = document.getElementById('breathCycleCount');
+            const progressCircle = document.getElementById('breathProgressCircle');
+            const stepInhale = document.getElementById('stepInhaleItem');
+            const stepHold = document.getElementById('stepHoldItem');
+            const stepExhale = document.getElementById('stepExhaleItem');
+            
+            let sessionStartTime = null;
+            let currentCycle = 1;
+            let currentStep = 0;
+            let stepStartTime = null;
+            let animationActive = false;
+            let timerInterval = null;
+            
+            const circumference = 2 * Math.PI * 100;
+            progressCircle.style.strokeDasharray = circumference;
+            
+            function stopAll() {
+                animationActive = false;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                if (breathAnimationFrame) {
+                    cancelAnimationFrame(breathAnimationFrame);
+                    breathAnimationFrame = null;
+                }
+            }
+            
+            function updateTotalTimer() {
+                if (!sessionStartTime) return;
+                const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                breathTotalTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            function setStepActive(step) {
+                stepInhale.classList.remove('active');
+                stepHold.classList.remove('active');
+                stepExhale.classList.remove('active');
+                if (step === 0) stepInhale.classList.add('active');
+                else if (step === 1) stepHold.classList.add('active');
+                else stepExhale.classList.add('active');
+            }
+            
+            function animateStep(duration, phaseText, stepIndex) {
+                return new Promise((resolve) => {
+                    const startTime = performance.now();
+                    setStepActive(stepIndex);
+                    breathPhaseText.textContent = phaseText;
+                    
+                    function update(currentTime) {
+                        if (!animationActive) {
+                            resolve();
+                            return;
+                        }
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        const remainingSeconds = Math.ceil((duration - elapsed) / 1000);
+                        breathCountdown.textContent = Math.max(1, remainingSeconds);
+                        
+                        const strokeOffset = circumference * (1 - progress);
+                        progressCircle.style.strokeDashoffset = strokeOffset;
+                        
+                        if (elapsed < duration && animationActive) {
+                            breathAnimationFrame = requestAnimationFrame(update);
+                        } else {
+                            breathCountdown.textContent = '0';
+                            resolve();
+                        }
+                    }
+                    
+                    breathAnimationFrame = requestAnimationFrame(update);
+                });
+            }
+            
+            async function startBreathingCycle() {
+                if (!animationActive) return;
+                
+                await animateStep(4000, 'INHALE', 0);
+                if (!animationActive) return;
+                
+                await animateStep(4000, 'HOLD', 1);
+                if (!animationActive) return;
+                
+                await animateStep(6000, 'EXHALE', 2);
+                if (!animationActive) return;
+                
+                currentCycle++;
+                breathCycleCount.textContent = `CYCLE ${currentCycle}`;
+                
+                if (currentCycle <= 3) {
+                    startBreathingCycle();
+                } else {
+                    breathPhaseText.textContent = 'COMPLETE';
+                    breathCountdown.textContent = '✨';
+                    setTimeout(() => {
+                        if (modal.style.display === 'block') {
+                            modal.style.display = 'none';
+                        }
+                        stopAll();
+                    }, 1500);
+                }
+            }
+            
+            function startBreathingSession() {
+                stopAll();
+                animationActive = true;
+                sessionStartTime = Date.now();
+                currentCycle = 1;
+                breathCycleCount.textContent = 'CYCLE 1';
+                breathTotalTimer.textContent = '00:00';
+                progressCircle.style.strokeDashoffset = circumference;
+                breathCountdown.textContent = '4';
+                breathPhaseText.textContent = 'INHALE';
+                setStepActive(0);
+                
+                timerInterval = setInterval(updateTotalTimer, 1000);
+                startBreathingCycle();
+            }
+            
+            function resetAndClose() {
+                stopAll();
+                modal.style.display = 'none';
+                breathPhaseText.textContent = 'INHALE';
+                breathCountdown.textContent = '4';
+                breathTotalTimer.textContent = '00:00';
+                breathCycleCount.textContent = 'CYCLE 1';
+                progressCircle.style.strokeDashoffset = circumference;
+                setStepActive(0);
+                currentCycle = 1;
+            }
+            
+            btn.onclick = () => {
+                modal.style.display = 'block';
+                startBreathingSession();
+            };
+            
+            closeBtn.onclick = () => {
+                resetAndClose();
+            };
+            
+            closeSessionBtn.onclick = () => {
+                resetAndClose();
+            };
+            
+            window.onclick = (e) => {
+                if (e.target === modal) {
+                    resetAndClose();
+                }
+            };
+        }
+        
+        function logout() {
+            localStorage.removeItem('neuroprint_user');
+            window.location.href = '/login';
+        }
+        
+        async function init() {
+            await loadUser();
+            await loadUserData();
+            setupBreathingModal();
+        }
+        
+        init();
+    </script>
+</body>
+</html>

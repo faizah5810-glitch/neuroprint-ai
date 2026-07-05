@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint | Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    
+    <div class="container">
+        <div class="neural-bg"></div>
+        
+        <div class="card">
+            <div class="logo">
+                <span class="neon-text">NEUROPRINT</span>
+                <span class="subtitle">INTELLIGENT BEHAVIOR SYSTEM</span>
+            </div>
+            
+            <h2>CREATE ACCOUNT</h2>
+            
+            <form id="registerForm">
+                <div class="input-group">
+                    <input type="text" id="fullname" required>
+                    <label>FULL NAME</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" id="email" required>
+                    <label>EMAIL ADDRESS</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" required>
+                    <label>PASSWORD</label>
+                    <!-- Password Strength Bar - letak di luar supaya label center -->
+                </div>
+                
+                <!-- Password Strength Bar di luar input-group -->
+                <div class="password-strength-container" id="strengthContainer">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">Enter a password</div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="confirmPassword" required>
+                    <label>CONFIRM PASSWORD</label>
+                </div>
+                
+                <!-- Password Match di luar input-group -->
+                <div class="password-match" id="passwordMatch"></div>
+                
+                <div class="fingerprint-area">
+                    <p class="instruction">🔷 PLACE & HOLD YOUR FINGER 🔷</p>
+                    <div class="fingerprint-btn" id="fingerprintBtn">
+                        <div class="fingerprint-icon">🖐️</div>
+                        <div class="ripple"></div>
+                        <div class="hover-ripple"></div>
+                    </div>
+                    <div class="scan-status" id="scanStatus">
+                        ⚡ AWAITING FINGERPRINT SCAN ⚡
+                    </div>
+                    <div class="behavior-detail" id="behaviorDetail"></div>
+                </div>
+                
+                <button type="submit" id="submitBtn" disabled>⚡ REGISTER NOW ⚡</button>
+            </form>
+            
+            <p class="login-link">🔗 EXISTING USER? <a href="/login">LOGIN HERE</a> 🔗</p>
+        </div>
+    </div>
+    
+    <!-- SUCCESS POPUP MODAL -->
+    <div id="successModal" class="success-modal">
+        <div class="success-modal-content">
+            <div class="success-icon">🎉</div>
+            <h3>REGISTRATION SUCCESSFUL!</h3>
+            <p>Welcome to <strong>NeuroPrint AI</strong> — your intelligent behavior authentication system.</p>
+            <p class="success-message">Your account has been created successfully.</p>
+            <div class="success-loading">
+                <div class="loading-spinner"></div>
+                <span>Redirecting to login page...</span>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        /* Particle Canvas */
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Fingerprint Button with Hover Ripple */
+        .fingerprint-btn {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #0a0a0f, #050508);
+            border-radius: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        
+        .fingerprint-icon {
+            font-size: 60px;
+            z-index: 2;
+            transition: all 0.2s ease;
+        }
+        
+        .fingerprint-btn:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+            transform: scale(1.03);
+        }
+        
+        .fingerprint-btn:hover .fingerprint-icon {
+            transform: scale(1.08);
+        }
+        
+        .hover-ripple {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 70px;
+            background: radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(0,212,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .fingerprint-btn:hover .hover-ripple {
+            opacity: 1;
+            animation: hoverRipple 1.5s ease-out infinite;
+        }
+        
+        @keyframes hoverRipple {
+            0% { transform: scale(0.5); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes rippleEffect {
+            0% { transform: scale(0.7); opacity: 0.6; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        
+        .fingerprint-btn.scanning .ripple {
+            animation: rippleEffect 1.5s infinite;
+        }
+        
+        .fingerprint-btn.scanning {
+            border-color: #00d4ff;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.8);
+        }
+        
+        .fingerprint-area {
+            background: rgba(8, 8, 12, 0.7);
+            border-radius: 28px;
+            padding: 30px 25px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .fingerprint-area:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .instruction {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        
+        .scan-status {
+            margin-top: 22px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .behavior-detail {
+            margin-top: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .detail-item {
+            background: rgba(0, 212, 255, 0.12);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #00d4ff;
+            border: 1px solid #00d4ff55;
+            font-weight: 600;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+        
+        .detail-item:hover {
+            background: rgba(0, 212, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00d4ff, #0088aa);
+            border: none;
+            border-radius: 40px;
+            color: #0a0a0a;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+        
+        button[type="submit"]:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 212, 255, 0.5);
+            background: linear-gradient(135deg, #00e4ff, #0099bb);
+            letter-spacing: 2px;
+        }
+        
+        button[type="submit"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Card Styles */
+        .card {
+            position: relative;
+            background: rgba(8, 8, 12, 0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 45px 40px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            z-index: 2;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff, #0088aa, #00d4ff, #00ff88);
+            background-size: 300% 100%;
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderFlow 3s linear infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes borderFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: rgba(8, 8, 12, 0.95);
+            border-radius: 46px;
+            z-index: -1;
+        }
+        
+        .neon-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 3px;
+        }
+        
+        .subtitle {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 8px;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 3px;
+        }
+        
+        h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 1px;
+            font-size: 28px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 35px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 18px;
+            background: rgba(15, 15, 20, 0.9);
+            border: 1.5px solid #2a2a2a;
+            border-radius: 20px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        
+        /* Label dalam input - floating */
+        .input-group label {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            transition: all 0.3s;
+            pointer-events: none;
+            font-size: 14px;
+            font-weight: 400;
+            z-index: 1;
+        }
+        
+        .input-group input:focus + label,
+        .input-group input:valid + label {
+            top: -8px;
+            font-size: 11px;
+            background: #08080c;
+            padding: 0 8px;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 28px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .login-link a:hover {
+            text-shadow: 0 0 8px #00d4ff;
+            text-decoration: underline;
+        }
+        
+        /* Password Strength Bar - di luar input-group */
+        .password-strength-container {
+            margin-top: -15px;
+            margin-bottom: 20px;
+            padding: 0 5px;
+        }
+        
+        .strength-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+        
+        .strength-fill.very-weak { background: #ff0040; width: 20%; }
+        .strength-fill.weak { background: #ff6600; width: 40%; }
+        .strength-fill.medium { background: #ffaa00; width: 60%; }
+        .strength-fill.strong { background: #88cc00; width: 80%; }
+        .strength-fill.very-strong { background: #00ff88; width: 100%; }
+        
+        .strength-text {
+            font-size: 11px;
+            color: #888;
+            transition: color 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .strength-text.very-weak { color: #ff0040; }
+        .strength-text.weak { color: #ff6600; }
+        .strength-text.medium { color: #ffaa00; }
+        .strength-text.strong { color: #88cc00; }
+        .strength-text.very-strong { color: #00ff88; }
+        
+        /* Password Match - di luar input-group */
+        .password-match {
+            font-size: 11px;
+            margin-top: -15px;
+            margin-bottom: 25px;
+            padding-left: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .password-match.match { color: #00ff88; }
+        .password-match.no-match { color: #ff0040; }
+        
+        /* Success Modal */
+        .success-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+        }
+        
+        .success-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(12, 12, 22, 0.98), rgba(8, 8, 16, 0.98));
+            backdrop-filter: blur(20px);
+            padding: 40px 35px;
+            border-radius: 60px;
+            width: 450px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 60px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 212, 255, 0.2);
+            animation: modalPop 0.4s ease;
+        }
+        
+        @keyframes modalPop {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .success-icon { font-size: 70px; margin-bottom: 15px; animation: bounce 0.5s ease; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .success-modal-content h3 { color: #00ff88; font-family: 'Orbitron', monospace; font-size: 26px; margin-bottom: 15px; letter-spacing: 1px; }
+        .success-modal-content p { color: #ccc; font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
+        .success-message { color: #00d4ff !important; font-weight: 600; }
+        
+        .success-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .success-loading span {
+            color: #aaa;
+            font-size: 13px;
+        }
+        
+        .ripple {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 70px;
+            background: rgba(0, 212, 255, 0.4);
+            opacity: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .card { padding: 25px 20px; }
+            .neon-text { font-size: 24px; }
+        }
+    </style>
+    
+    <script>
+        // ============= PARTICLE ANIMATION BACKGROUND =============
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let particleAnimationId = null;
+        
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            particles = [];
+            const particleCount = 80;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.5 + 0.2,
+                    color: Math.random() > 0.6 ? '#00d4ff' : '#00ff88'
+                });
+            }
+        }
+        
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fill();
+                
+                p.x += p.speedX;
+                p.y += p.speedY;
+                
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+            });
+            
+            particleAnimationId = requestAnimationFrame(drawParticles);
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+        
+        initParticles();
+        drawParticles();
+        
+        // ============= SOUND EFFECT =============
+        function playBeep(frequency = 800, duration = 200, type = 'sine') {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                gainNode.gain.value = 0.3;
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + duration / 1000);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+                
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            } catch (e) {
+                console.log('Web Audio not supported');
+            }
+        }
+        
+        function playSuccessSound() {
+            playBeep(880, 200, 'sine');
+        }
+        
+        function playFailSound() {
+            playBeep(440, 300, 'sawtooth');
+        }
+        
+        // ============= PASSWORD STRENGTH & CONFIRM =============
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirmPassword');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        const passwordMatch = document.getElementById('passwordMatch');
+        
+        function checkPasswordStrength(password) {
+            let score = 0;
+            
+            if (password.length === 0) return { level: 'none', label: 'Enter a password', width: 0 };
+            if (password.length < 4) return { level: 'very-weak', label: 'Very Weak', width: 20 };
+            
+            // Length check
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            
+            // Character types
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+            
+            // Determine level
+            if (score >= 6) return { level: 'very-strong', label: 'Very Strong', width: 100 };
+            if (score >= 5) return { level: 'strong', label: 'Strong', width: 80 };
+            if (score >= 3) return { level: 'medium', label: 'Medium', width: 60 };
+            if (score >= 2) return { level: 'weak', label: 'Weak', width: 40 };
+            return { level: 'very-weak', label: 'Very Weak', width: 20 };
+        }
+        
+        passwordInput.addEventListener('input', function() {
+            const result = checkPasswordStrength(this.value);
+            strengthFill.className = 'strength-fill ' + result.level;
+            strengthFill.style.width = result.width + '%';
+            strengthText.textContent = result.label;
+            strengthText.className = 'strength-text ' + result.level;
+            
+            // Check confirm password match
+            checkPasswordMatch();
+        });
+        
+        confirmInput.addEventListener('input', checkPasswordMatch);
+        
+        function checkPasswordMatch() {
+            if (confirmInput.value.length === 0) {
+                passwordMatch.textContent = '';
+                passwordMatch.className = 'password-match';
+                return;
+            }
+            
+            if (passwordInput.value === confirmInput.value) {
+                passwordMatch.textContent = '✅ Passwords match';
+                passwordMatch.className = 'password-match match';
+            } else {
+                passwordMatch.textContent = '❌ Passwords do not match';
+                passwordMatch.className = 'password-match no-match';
+            }
+        }
+        
+        // ============= SCAN DATA =============
+        let scanData = {
+            duration: 0,
+            pressure: 50,
+            retry: 0,
+            speed: 'normal'
+        };
+        
+        let isScanning = false;
+        let scanStartTime = 0;
+        
+        const fingerprintBtn = document.getElementById('fingerprintBtn');
+        const scanStatus = document.getElementById('scanStatus');
+        const behaviorDetail = document.getElementById('behaviorDetail');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        fingerprintBtn.addEventListener('mousedown', startScan);
+        fingerprintBtn.addEventListener('mouseup', endScan);
+        fingerprintBtn.addEventListener('touchstart', startScan);
+        fingerprintBtn.addEventListener('touchend', endScan);
+        
+        function startScan(e) {
+            e.preventDefault();
+            isScanning = true;
+            scanStartTime = Date.now();
+            fingerprintBtn.classList.add('scanning');
+            scanStatus.innerHTML = '🟢 SCANNING ACTIVE — HOLD FIRMLY 🟢';
+            scanStatus.style.color = '#00d4ff';
+        }
+        
+        function endScan(e) {
+            e.preventDefault();
+            if (!isScanning) return;
+            
+            const duration = Date.now() - scanStartTime;
+            isScanning = false;
+            fingerprintBtn.classList.remove('scanning');
+            
+            let pressure;
+            if (duration < 500) pressure = 30;
+            else if (duration < 1500) pressure = 60;
+            else pressure = 85;
+            
+            let speed = duration < 1000 ? 'fast' : (duration < 2000 ? 'normal' : 'slow');
+            let retry = scanData.retry;
+            let success = true;
+            
+            if (duration < 300) {
+                success = false;
+                playFailSound();
+                scanStatus.innerHTML = '❌ SCAN FAILED — TOO FAST. TRY AGAIN ❌';
+                scanStatus.style.color = '#ff0040';
+                retry++;
+            } else if (duration > 4000) {
+                success = false;
+                playFailSound();
+                scanStatus.innerHTML = '❌ SCAN TIMEOUT — TOO SLOW. TRY AGAIN ❌';
+                scanStatus.style.color = '#ff0040';
+                retry++;
+            } else {
+                success = true;
+                playSuccessSound();
+                scanStatus.innerHTML = '✅ FINGERPRINT CAPTURED SUCCESSFULLY! ✅';
+                scanStatus.style.color = '#00ff88';
+            }
+            
+            if (!success) {
+                scanData.retry = retry;
+                setTimeout(() => {
+                    scanStatus.innerHTML = '⚡ AWAITING FINGERPRINT SCAN ⚡';
+                    scanStatus.style.color = '#aaa';
+                }, 1500);
+                return;
+            }
+            
+            scanData.duration = duration;
+            scanData.pressure = pressure;
+            scanData.speed = speed;
+            
+            behaviorDetail.innerHTML = `
+                <div class="detail-item">⏱️ DURATION: ${duration}ms</div>
+                <div class="detail-item">💪 PRESSURE: ${pressure}/100</div>
+                <div class="detail-item">⚡ SPEED: ${speed.toUpperCase()}</div>
+                <div class="detail-item">🔄 RETRY: ${scanData.retry}</div>
+            `;
+            
+            submitBtn.disabled = false;
+        }
+        
+        // Show Success Modal
+        function showSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'block';
+            
+            // Auto redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 3000);
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!fullname || !email || !password || !confirmPassword) {
+                alert('⚠️ PLEASE FILL ALL FIELDS ⚠️');
+                return;
+            }
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert('⚠️ PASSWORDS DO NOT MATCH ⚠️');
+                return;
+            }
+            
+            // Check password strength (minimum medium)
+            const strength = checkPasswordStrength(password);
+            if (strength.level === 'very-weak' || strength.level === 'weak') {
+                alert('⚠️ PLEASE CHOOSE A STRONGER PASSWORD (Minimum: Medium) ⚠️');
+                return;
+            }
+            
+            if (scanData.duration === 0) {
+                alert('⚠️ FINGERPRINT SCAN REQUIRED ⚠️');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '🔐 REGISTERING... 🔐';
+            
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fullname,
+                    email,
+                    password,
+                    behavior_data: scanData
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                playSuccessSound();
+                showSuccessModal();
+            } else {
+                playFailSound();
+                alert('❌ REGISTRATION FAILED: ' + result.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '⚡ REGISTER NOW ⚡';
+            }
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (particleAnimationId) cancelAnimationFrame(particleAnimationId);
+        });
+    </script>
+</body>
+</html>

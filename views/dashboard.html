@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint AI | Intelligence Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="neural-bg"></div>
+        
+        <!-- HEADER BARIS 1: WELCOME + FULL TITLE -->
+        <div class="welcome-header">
+            <div class="welcome-tag">WELCOME TO</div>
+            <div class="full-title">NeuroPrint AI</div>
+            <div class="full-subtitle">Behavior Authentication & Emotion Detection System</div>
+        </div>
+        
+        <!-- NAVBAR BARIS 2: My Hub | My Wellness | Reflect -->
+        <div class="navbar">
+            <a href="/alerts" class="nav-btn hub-btn">
+                <i class="fas fa-user-shield"></i> MY HUB
+            </a>
+            <a href="/wellness" class="nav-btn wellness-btn">
+                <i class="fas fa-leaf"></i> MY WELLNESS
+            </a>
+            <a href="/reflect-gratitude" class="nav-btn reflect-btn">
+                <i class="fas fa-journal-whills"></i> REFLECT
+            </a>
+			<a href="/echo-alter" class="nav-btn alterego-btn">
+    <i class="fas fa-brain"></i> ECHO | ALTER
+</a>
+        </div>
+        
+        <!-- HEADER BARIS 3: LOGO + LIVE STATUS + USER + LOGOUT -->
+        <div class="dashboard-header">
+            <div class="logo">
+                <span class="neon-text">NEUROPRINT AI</span>
+                <span class="subtitle">BEHAVIOR ANALYTICS DASHBOARD</span>
+            </div>
+            <div class="user-info">
+                <div class="live-status">
+                    <span class="live-dot"></span>
+                    <span class="live-text">LIVE</span>
+                </div>
+                <span class="user-name" id="userName">👤 LOADING...</span>
+                <button class="logout-btn" onclick="logout()">🔓 LOGOUT</button>
+            </div>
+        </div>
+        
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card stat-cyan" id="statTotal">
+                <div class="stat-icon">🔬</div>
+                <div class="stat-value" id="totalScans">0</div>
+                <div class="stat-label">TOTAL SCANS</div>
+                <div class="stat-progress">
+                    <div class="progress-bar" id="progressTotal" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card stat-orange" id="statRisk">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="avgRisk">0%</div>
+                <div class="stat-label">AVG RISK LEVEL</div>
+                <div class="stat-progress">
+                    <div class="progress-bar" id="progressRisk" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card stat-green" id="statCalm">
+                <div class="stat-icon">😊</div>
+                <div class="stat-value" id="calmPercentage">0%</div>
+                <div class="stat-label">CALM SESSIONS</div>
+                <div class="stat-progress">
+                    <div class="progress-bar" id="progressCalm" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="stat-card stat-red" id="statAlert">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-value" id="highRiskCount">0</div>
+                <div class="stat-label">HIGH RISK ALERTS</div>
+                <div class="stat-progress">
+                    <div class="progress-bar" id="progressAlert" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CHARTS ROW -->
+        <div class="charts-row">
+            <div class="chart-card">
+                <h3>📈 EMOTION TREND (LAST 7 DAYS)</h3>
+                <canvas id="emotionChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>🥧 EMOTION DISTRIBUTION</h3>
+                <canvas id="riskChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <!-- ACTIVITY TABLE -->
+        <div class="activity-card">
+            <div class="activity-header">
+                <h3>📋 RECENT AUTHENTICATION ACTIVITY</h3>
+                <div class="record-badge" id="recordBadge">0 RECORDS</div>
+            </div>
+            <div class="table-wrapper">
+                <table id="activityTable">
+                    <thead>
+                        <tr>
+                            <th>📅 DATE & TIME</th>
+                            <th>🧠 EMOTION</th>
+                            <th>⚠️ RISK</th>
+                            <th>⏱️ DURATION</th>
+                            <th>💪 PRESSURE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityBody">
+                        <tr><td colspan="5">🌀 LOADING BEHAVIOR DATA... 🌀<\/td><\/tr>
+                    </tbody>
+                <\/table>
+            <\/div>
+        <\/div>
+    <\/div>
+    
+    <style>
+        /* WELCOME HEADER BARIS 1 */
+        .welcome-header {
+            background: rgba(8, 8, 12, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .welcome-header:hover {
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+        
+        .welcome-tag {
+            font-size: 22px;
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .full-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 31px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88, #00d4ff);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+            line-height: 1.3;
+        }
+        
+        .full-subtitle {
+            font-family: 'Space Grotesk', monospace;
+            font-size: 16px;
+            color: #aaa;
+            margin-top: 6px;
+            letter-spacing: 1px;
+        }
+        
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-btn i {
+            font-size: 16px;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+        
+        /* MY HUB BUTTON - Red */
+        .hub-btn {
+            background: rgba(255, 0, 64, 0.15);
+            border: 1.5px solid #ff0040;
+            color: #ff0040;
+            box-shadow: 0 0 10px rgba(255, 0, 64, 0.2);
+        }
+        
+        .hub-btn:hover {
+            background: rgba(255, 0, 64, 0.35);
+            box-shadow: 0 0 20px rgba(255, 0, 64, 0.4);
+        }
+        
+        /* MY WELLNESS BUTTON - Green */
+        .wellness-btn {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1.5px solid #00ff88;
+            color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+        
+        .wellness-btn:hover {
+            background: rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        /* REFLECT BUTTON - Gold/Orange */
+        .reflect-btn {
+            background: rgba(255, 170, 0, 0.12);
+            border: 1.5px solid #ffaa00;
+            color: #ffaa00;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.2);
+        }
+        
+        .reflect-btn:hover {
+            background: rgba(255, 170, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 170, 0, 0.4);
+        }
+        
+        /* HEADER BARIS 3 */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 18px 30px;
+            border-radius: 35px;
+            margin-bottom: 35px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        
+        .dashboard-header:hover {
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+        
+        .logo {
+            text-align: left;
+        }
+        
+        .neon-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            display: block;
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 1px;
+        }
+        
+        /* LIVE STATUS DOT */
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 12px;
+            border-radius: 40px;
+            margin-right: 15px;
+        }
+        
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00ff88;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #00ff88; }
+            50% { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 15px #00ff88; }
+        }
+        
+        .live-text {
+            color: #00ff88;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            color: #00d4ff;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 18px;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 0, 64, 0.15);
+            border: 1.5px solid #ff0040;
+            color: #ff0040;
+            padding: 8px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 0, 64, 0.4);
+            box-shadow: 0 0 15px rgba(255, 0, 64, 0.3);
+        }
+        
+        /* STAT CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .stat-card {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover { transform: translateY(-8px); box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5); }
+        .stat-cyan:hover { border-color: #00d4ff; box-shadow: 0 0 25px rgba(0, 212, 255, 0.3); }
+        .stat-orange:hover { border-color: #ffaa00; box-shadow: 0 0 25px rgba(255, 170, 0, 0.3); }
+        .stat-green:hover { border-color: #00ff88; box-shadow: 0 0 25px rgba(0, 255, 136, 0.3); }
+        .stat-red:hover { border-color: #ff0040; box-shadow: 0 0 25px rgba(255, 0, 64, 0.3); }
+        
+        .stat-icon { font-size: 42px; margin-bottom: 12px; transition: transform 0.2s; }
+        .stat-card:hover .stat-icon { transform: scale(1.1); }
+        
+        .stat-value { font-size: 44px; font-weight: 900; font-family: 'Orbitron', monospace; }
+        .stat-cyan .stat-value { color: #00d4ff; }
+        .stat-orange .stat-value { color: #ffaa00; }
+        .stat-green .stat-value { color: #00ff88; }
+        .stat-red .stat-value { color: #ff0040; }
+        
+        .stat-label { color: #aaa; font-size: 12px; margin-top: 10px; font-weight: 500; letter-spacing: 1px; }
+        
+        .stat-progress { margin-top: 18px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 4px; transition: width 1s ease-out; }
+        .stat-cyan .progress-bar { background: linear-gradient(90deg, #00d4ff, #00ff88); }
+        .stat-orange .progress-bar { background: linear-gradient(90deg, #ffaa00, #ff6400); }
+        .stat-green .progress-bar { background: linear-gradient(90deg, #00ff88, #00d4ff); }
+        .stat-red .progress-bar { background: linear-gradient(90deg, #ff0040, #ff00aa); }
+        
+        /* CHARTS */
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 35px;
+        }
+        
+        .chart-card {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 25px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-card:hover { border-color: #00d4ff55; box-shadow: 0 0 25px rgba(0, 212, 255, 0.1); }
+        .chart-card h3 { color: #fff; margin-bottom: 20px; font-size: 18px; font-family: 'Space Grotesk', monospace; }
+        
+        /* ACTIVITY TABLE */
+        .activity-card {
+            background: rgba(8, 8, 12, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 28px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-card:hover { border-color: #00d4ff55; box-shadow: 0 0 35px rgba(0, 212, 255, 0.1); }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .record-badge {
+            background: linear-gradient(135deg, #00d4ff20, #00ff8820);
+            border: 1px solid #00d4ff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            color: #00d4ff;
+            letter-spacing: 1px;
+        }
+        
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid #222; }
+        th { color: #00d4ff; font-weight: 700; font-family: 'Space Grotesk', monospace; }
+        td { color: #ccc; }
+        
+        .table-row-fade {
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: fadeSlideIn 0.3s ease forwards;
+        }
+        
+        @keyframes fadeSlideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .risk-high { color: #ff0040; font-weight: bold; text-shadow: 0 0 5px #ff004055; }
+        .risk-medium { color: #ffaa00; }
+        .risk-low { color: #00ff88; }
+        .emotion-stress { color: #ff0040; }
+        .emotion-calm { color: #00ff88; }
+        
+        @media (max-width: 1000px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .navbar { gap: 15px; }
+            .nav-btn { padding: 8px 20px; font-size: 12px; }
+        }
+        
+        @media (max-width: 700px) {
+            .navbar { flex-direction: column; align-items: center; }
+            .dashboard-header { flex-direction: column; gap: 15px; }
+            .user-info { flex-wrap: wrap; justify-content: center; }
+        }
+		
+		.alterego-btn {
+    background: linear-gradient(135deg, #00d4ff20, #ff004020);
+    border: 1.5px solid #ff00aa;
+    color: #ff00aa;
+}
+
+.alterego-btn:hover {
+    background: linear-gradient(135deg, #00d4ff40, #ff004040);
+    box-shadow: 0 0 20px rgba(255, 0, 170, 0.4);
+}
+
+        /* ============================================================
+           DASHBOARD — RESPONSIVE FIX
+           ============================================================ */
+        
+        /* Tablet & Phone (max-width: 1024px) */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                padding: 12px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 14px 10px;
+                border-radius: 20px;
+            }
+            
+            .stat-icon {
+                font-size: 28px;
+                margin-bottom: 6px;
+            }
+            
+            .stat-value {
+                font-size: 26px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+                margin-top: 6px;
+            }
+            
+            .stat-progress {
+                margin-top: 10px;
+                height: 3px;
+            }
+            
+            .charts-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .chart-card {
+                padding: 14px;
+            }
+            
+            .chart-card h3 {
+                font-size: 14px;
+            }
+            
+            .activity-card {
+                padding: 14px;
+            }
+            
+            .activity-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .activity-header h3 {
+                font-size: 14px;
+            }
+            
+            .record-badge {
+                font-size: 10px;
+                padding: 4px 12px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 10px;
+            }
+            
+            .table-wrapper {
+                overflow-x: auto;
+            }
+            
+            /* Welcome header */
+            .welcome-header {
+                padding: 12px 15px;
+                border-radius: 20px;
+            }
+            
+            .welcome-tag {
+                font-size: 14px;
+            }
+            
+            .full-title {
+                font-size: 22px;
+            }
+            
+            .full-subtitle {
+                font-size: 12px;
+            }
+            
+            /* Navbar */
+            .navbar {
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            
+            .nav-btn {
+                padding: 6px 12px;
+                font-size: 10px;
+                gap: 4px;
+                border-radius: 30px;
+            }
+            
+            .nav-btn i {
+                font-size: 12px;
+            }
+            
+            /* Dashboard header */
+            .dashboard-header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px 15px;
+                border-radius: 24px;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                text-align: center;
+            }
+            
+            .neon-text {
+                font-size: 22px;
+            }
+            
+            .subtitle {
+                font-size: 10px;
+            }
+            
+            .user-info {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            
+            .live-status {
+                padding: 4px 10px;
+            }
+            
+            .live-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .live-text {
+                font-size: 10px;
+            }
+            
+            .user-name {
+                font-size: 14px;
+            }
+            
+            .logout-btn {
+                font-size: 11px;
+                padding: 4px 14px;
+            }
+            
+            /* Wellness progress bar */
+            .wellness-progress-card {
+                padding: 14px 16px;
+                border-radius: 24px;
+                margin-bottom: 16px;
+            }
+            
+            .progress-title {
+                font-size: 13px;
+            }
+            
+            .progress-percentage {
+                font-size: 18px;
+            }
+            
+            .progress-bar-container {
+                height: 8px;
+            }
+            
+            .progress-status {
+                font-size: 10px;
+            }
+        }
+        
+        /* Small Phone (max-width: 600px) */
+        @media (max-width: 600px) {
+            .dashboard-container {
+                padding: 8px;
+            }
+            
+            .stats-grid {
+                gap: 8px;
+            }
+            
+            .stat-card {
+                padding: 10px 6px;
+                border-radius: 16px;
+            }
+            
+            .stat-icon {
+                font-size: 20px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 8px;
+            }
+            
+            .welcome-tag {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+            
+            .full-title {
+                font-size: 18px;
+            }
+            
+            .full-subtitle {
+                font-size: 10px;
+            }
+            
+            .neon-text {
+                font-size: 18px;
+            }
+            
+            .nav-btn {
+                font-size: 8px;
+                padding: 4px 8px;
+                gap: 3px;
+            }
+            
+            .nav-btn i {
+                font-size: 10px;
+            }
+            
+            .chart-card h3 {
+                font-size: 12px;
+            }
+            
+            th, td {
+                font-size: 8px;
+                padding: 4px 4px;
+            }
+            
+            .user-name {
+                font-size: 12px;
+            }
+            
+            .logout-btn {
+                font-size: 9px;
+                padding: 3px 10px;
+            }
+            
+            .live-text {
+                font-size: 8px;
+            }
+            
+            .record-badge {
+                font-size: 8px;
+                padding: 3px 8px;
+            }
+            
+            .activity-header h3 {
+                font-size: 12px;
+            }
+            
+            .progress-title {
+                font-size: 11px;
+            }
+            
+            .progress-percentage {
+                font-size: 15px;
+            }
+            
+            .progress-status {
+                font-size: 9px;
+            }
+        }
+    </style>
+    
+    <!-- Font Awesome untuk icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        let currentUser = null;
+        
+        // Get last 7 days with format: "5/8\nSUN" (date + day)
+        function getLast7DayLabels() {
+            const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            const result = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const dayName = days[date.getDay()];
+                result.push(`${month}/${day}\n${dayName}`);
+            }
+            return result;
+        }
+        
+        async function loadDashboard() {
+            const userStr = localStorage.getItem('neuroprint_user');
+            if (!userStr) {
+                window.location.href = '/login';
+                return;
+            }
+            
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').innerHTML = `👤 ${currentUser.name.toUpperCase()}`;
+            
+            const response = await fetch(`/api/user/${currentUser.id}/scans`);
+            const data = await response.json();
+            
+            if (data.success) {
+                updateStats(data.scans);
+                updateCharts(data.scans);
+                updateTable(data.scans);
+            }
+        }
+        
+        function updateStats(scans) {
+            const total = scans.length;
+            document.getElementById('totalScans').innerHTML = total;
+            document.getElementById('recordBadge').innerHTML = `${total} RECORDS`;
+            
+            if (total === 0) {
+                document.getElementById('avgRisk').innerHTML = '0%';
+                document.getElementById('calmPercentage').innerHTML = '0%';
+                document.getElementById('highRiskCount').innerHTML = '0';
+                return;
+            }
+            
+            let riskSum = 0;
+            let calmCount = 0;
+            let highRiskCount = 0;
+            
+            scans.forEach(scan => {
+                if (scan.risk_level === 'High') {
+                    riskSum += 80;
+                    highRiskCount++;
+                } else if (scan.risk_level === 'Medium') {
+                    riskSum += 50;
+                } else {
+                    riskSum += 20;
+                }
+                
+                if (scan.emotion_estimate === 'Confident / Calm' || scan.emotion_estimate === 'Efficient') {
+                    calmCount++;
+                }
+            });
+            
+            const avgRisk = Math.round(riskSum / total);
+            const calmPercent = Math.round((calmCount / total) * 100);
+            
+            document.getElementById('avgRisk').innerHTML = avgRisk + '%';
+            document.getElementById('calmPercentage').innerHTML = calmPercent + '%';
+            document.getElementById('highRiskCount').innerHTML = highRiskCount;
+            
+            document.getElementById('progressTotal').style.width = '100%';
+            document.getElementById('progressRisk').style.width = Math.min(avgRisk, 100) + '%';
+            document.getElementById('progressCalm').style.width = calmPercent + '%';
+            document.getElementById('progressAlert').style.width = Math.min((highRiskCount / total) * 100, 100) + '%';
+        }
+        
+        function updateCharts(scans) {
+            const labels = getLast7DayLabels();
+            
+            // Count calm sessions per day based on actual scan dates
+            const calmData = labels.map((_, idx) => {
+                const targetDate = new Date();
+                targetDate.setDate(targetDate.getDate() - (6 - idx));
+                const targetDay = targetDate.getDay();
+                let count = 0;
+                scans.forEach(scan => {
+                    const scanDate = new Date(scan.scanned_at);
+                    if (scanDate.getDay() === targetDay && 
+                        (scan.emotion_estimate === 'Confident / Calm' || scan.emotion_estimate === 'Efficient')) {
+                        count++;
+                    }
+                });
+                return count;
+            });
+            
+            const emotionCount = { 'Stress': 0, 'Calm': 0, 'Neutral': 0, 'Anxious': 0, 'Frustrated': 0 };
+            scans.forEach(scan => {
+                const emotion = scan.emotion_estimate;
+                if (emotion === 'Confident / Calm' || emotion === 'Efficient') emotionCount['Calm']++;
+                else if (emotion === 'Stress') emotionCount['Stress']++;
+                else if (emotion === 'Anxious') emotionCount['Anxious']++;
+                else if (emotion === 'Frustrated') emotionCount['Frustrated']++;
+                else emotionCount['Neutral']++;
+            });
+            
+            // Destroy existing charts if any
+            const existingChart1 = Chart.getChart('emotionChart');
+            if (existingChart1) existingChart1.destroy();
+            const existingChart2 = Chart.getChart('riskChart');
+            if (existingChart2) existingChart2.destroy();
+            
+            // LINE CHART with date + day labels
+            const ctx1 = document.getElementById('emotionChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'CALM/CONFIDENT SESSIONS',
+                        data: calmData,
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.08)',
+                        borderWidth: 5,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#00ff88',
+                        pointBorderColor: '#00ff88',
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { labels: { color: '#fff', font: { family: 'Space Grotesk', size: 11 } } }
+                    },
+                    scales: {
+                        y: { 
+                            ticks: { color: '#aaa', stepSize: 1 }, 
+                            grid: { color: '#222' },
+                            title: { display: true, text: 'NUMBER OF SCANS', color: '#aaa', font: { size: 10 } }
+                        },
+                        x: { 
+                            ticks: { 
+                                color: '#00d4ff', 
+                                font: { size: 10, weight: 'bold' },
+                                whiteSpace: 'pre-line'
+                            }, 
+                            grid: { color: '#222' } 
+                        }
+                    }
+                }
+            });
+            
+            // DOUGHNUT CHART
+            const ctx2 = document.getElementById('riskChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['STRESS', 'CALM', 'NEUTRAL', 'ANXIOUS', 'FRUSTRATED'],
+                    datasets: [{
+                        data: [emotionCount.Stress, emotionCount.Calm, emotionCount.Neutral, emotionCount.Anxious, emotionCount.Frustrated],
+                        backgroundColor: ['#ff0040', '#00ff88', '#00d4ff', '#ffaa00', '#ff0000'],
+                        borderWidth: 2,
+                        borderColor: '#0a0a0a',
+                        borderRadius: 8,
+                        spacing: 3,
+                        cutout: '65%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#fff', font: { family: 'Space Grotesk', size: 11 } } }
+                    }
+                }
+            });
+        }
+        
+        function updateTable(scans) {
+            const tbody = document.getElementById('activityBody');
+            if (scans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">🌀 NO SCAN RECORDS FOUND 🌀</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            scans.slice(0, 15).forEach((scan, index) => {
+                const row = tbody.insertRow();
+                row.className = 'table-row-fade';
+                row.style.animationDelay = `${index * 0.03}s`;
+                
+                const date = new Date(scan.scanned_at).toLocaleString();
+                row.insertCell(0).innerHTML = date;
+                
+                let emotionClass = '';
+                if (scan.emotion_estimate === 'Stress') emotionClass = 'emotion-stress';
+                else if (scan.emotion_estimate === 'Confident / Calm') emotionClass = 'emotion-calm';
+                row.insertCell(1).innerHTML = `<span class="${emotionClass}">${scan.emotion_estimate.toUpperCase()}</span>`;
+                
+                let riskClass = '';
+                if (scan.risk_level === 'High') riskClass = 'risk-high';
+                else if (scan.risk_level === 'Medium') riskClass = 'risk-medium';
+                else riskClass = 'risk-low';
+                row.insertCell(2).innerHTML = `<span class="${riskClass}">${scan.risk_level.toUpperCase()}</span>`;
+                
+                row.insertCell(3).innerHTML = `${scan.scan_duration_ms}ms`;
+                row.insertCell(4).innerHTML = `${scan.pressure_simulated}/100`;
+            });
+        }
+        
+        function logout() {
+            localStorage.removeItem('neuroprint_user');
+            window.location.href = '/login';
+        }
+        
+        loadDashboard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint AI | EchoMind & AlterEgo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+        }
+        
+        .particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .ea-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .ea-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(8, 8, 12, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 18px 30px;
+            border-radius: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .logo-section { display: flex; align-items: center; gap: 30px; }
+        .neon-text {
+            font-family: 'Orbitron', monospace;
+            font-size: 27px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .subtitle { display: block; font-size: 14px; color: #ffaa00; margin-top: 4px; }
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+        .live-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00d4ff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00d4ff;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 8px #00d4ff; }
+            50% { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 15px #00d4ff; }
+        }
+        .live-text { color: #00d4ff; font-size: 14px; font-weight: 700; font-family: 'Orbitron', monospace; }
+        .user-name { color: #00d4ff; font-weight: 700; font-family: 'Space Grotesk', monospace; font-size: 16px; }
+        .logout-btn {
+            background: rgba(255, 0, 64, 0.15);
+            border: 1.5px solid #ff0040;
+            color: #ff0040;
+            padding: 6px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .logout-btn:hover { background: rgba(255, 0, 64, 0.4); box-shadow: 0 0 15px rgba(255, 0, 64, 0.3); transform: scale(1.02); }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero-section h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 32px;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .hero-section p {
+            color: #aaa;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        /* ECHOMIND SECTION */
+        .echomind-section {
+            background: rgba(8, 8, 12, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 30px;
+            margin-bottom: 35px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            transition: all 0.3s;
+        }
+        .echomind-section:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.15);
+        }
+        .section-icon { text-align: center; margin-bottom: 15px; }
+        .section-icon i { font-size: 48px; background: linear-gradient(135deg, #00d4ff, #00ff88); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .section-title h2 {
+            color: #00d4ff;
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+        }
+        .section-title p {
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        
+        /* Questions Grid */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .question-card {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .question-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+        }
+        .question-text {
+            color: #fff;
+            font-size: 15px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .option-btn {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 6px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+            transform: scale(1.02);
+        }
+        .option-btn.selected {
+            background: #00d4ff;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        
+        .echomind-results {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 25px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .result-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .result-card {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 20px;
+        }
+        .result-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+        .result-value {
+            font-size: 24px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+        }
+        .result-value.overthinking { color: #ffaa00; }
+        .result-value.confidence { color: #00ff88; }
+        .result-value.style { color: #00d4ff; font-size: 16px; }
+        
+        /* ALTEREGO SECTION */
+        .alterego-section {
+            background: rgba(8, 8, 12, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 35px;
+            padding: 30px;
+            border: 1px solid rgba(255, 0, 64, 0.3);
+            transition: all 0.3s;
+        }
+        .alterego-section:hover {
+            border-color: #ff0040;
+            box-shadow: 0 0 25px rgba(255, 0, 64, 0.15);
+        }
+        .alterego-section .section-icon i {
+            background: linear-gradient(135deg, #ff0040, #ff8800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .alterego-section .section-title h2 {
+            color: #ff0040;
+        }
+        
+        .training-area {
+            margin-bottom: 25px;
+        }
+        .training-status {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .progress-bar-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff0040, #ff8800);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .training-message {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .train-btn {
+            background: linear-gradient(135deg, #ff004020, #ff880020);
+            border: 1px solid #ff0040;
+            color: #ff0040;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .train-btn:hover {
+            background: linear-gradient(135deg, #ff004040, #ff880040);
+            transform: scale(1.02);
+        }
+        
+        .alterego-ask {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        .ask-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .ask-input input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 40px;
+            padding: 12px 18px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+        }
+        .ask-input input:focus {
+            outline: none;
+            border-color: #ff0040;
+        }
+        .ask-btn {
+            background: rgba(255, 0, 64, 0.2);
+            border: 1px solid #ff0040;
+            color: #ff0040;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .alterego-response {
+            background: rgba(255, 0, 64, 0.1);
+            border-radius: 20px;
+            padding: 15px;
+            border-left: 3px solid #ff0040;
+            margin-top: 15px;
+        }
+        .response-text {
+            color: #eee;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        .footer-back {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .back-to-dashboard {
+            display: inline-block;
+            color: #00d4ff;
+            text-decoration: none;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 14px;
+            padding: 10px 24px;
+            border: 1px solid #00d4ff;
+            border-radius: 40px;
+            transition: all 0.3s;
+            background: rgba(0, 212, 255, 0.05);
+        }
+        .back-to-dashboard:hover {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 900px) {
+            .questions-grid { grid-template-columns: 1fr; }
+            .result-grid { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    
+    <div class="ea-container">
+        <div class="ea-header">
+            <div class="logo-section">
+                <div class="logo">
+                    <span class="neon-text">NEUROPRINT AI</span>
+                    <span class="subtitle">ECHOMIND & ALTEREGO</span>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="live-status"><span class="live-dot"></span><span class="live-text">AI LAB</span></div>
+                <span class="user-name" id="userName"><i class="fas fa-user-astronaut"></i> LOADING...</span>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> LOGOUT</button>
+            </div>
+        </div>
+        
+        <div class="hero-section">
+            <h1><i class="fas fa-brain"></i> EchoMind & AlterEgo</h1>
+            <p>Understand your thinking pattern | Train AI to think like you</p>
+        </div>
+        
+        <!-- ============= ECHOMIND SECTION ============= -->
+        <div class="echomind-section">
+            <div class="section-icon"><i class="fas fa-waveform"></i></div>
+            <div class="section-title">
+                <h2>🧠 EchoMind</h2>
+                <p>Answer 8 questions. We'll analyze your thinking pattern.</p>
+            </div>
+            
+            <div class="questions-grid" id="questionsGrid">
+                <!-- Questions akan dijana dengan JS -->
+            </div>
+            
+            <div class="echomind-results" id="echomindResults" style="display: none;">
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-label"><i class="fas fa-brain"></i> Overthinking Level</div>
+                        <div class="result-value overthinking" id="overthinkingValue">0%</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label"><i class="fas fa-chart-line"></i> Confidence Score</div>
+                        <div class="result-value confidence" id="confidenceValue">0%</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label"><i class="fas fa-chess-queen"></i> Decision Style</div>
+                        <div class="result-value style" id="styleValue">—</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============= ALTEREGO SECTION ============= -->
+        <div class="alterego-section">
+            <div class="section-icon"><i class="fas fa-robot"></i></div>
+            <div class="section-title">
+                <h2>🔄 AlterEgo</h2>
+                <p>Teach AI to think and respond like you. Your digital twin.</p>
+            </div>
+            
+            <div class="training-area">
+                <div class="training-status" id="trainingStatus">
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="trainingFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="training-message" id="trainingMessage">Answer questions in EchoMind to train your AlterEgo</div>
+                </div>
+                <button class="train-btn" id="trainBtn"><i class="fas fa-chalkboard-user"></i> Train AI from My EchoMind Answers</button>
+            </div>
+            
+            <div class="alterego-ask">
+                <div class="ask-input">
+                    <input type="text" id="userQuestion" placeholder="Ask AlterEgo anything... (e.g., What should I do when I'm stressed?)">
+                    <button class="ask-btn" id="askBtn"><i class="fas fa-comment-dots"></i> Ask</button>
+                </div>
+                <div class="alterego-response" id="alteregoResponse" style="display: none;">
+                    <div class="response-text" id="responseText"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-back">
+            <a href="/dashboard" class="back-to-dashboard"><i class="fas fa-arrow-left"></i> BACK TO DASHBOARD</a>
+        </div>
+    </div>
+    
+    <script>
+        let currentUser = null;
+        
+        // ============= 8 SOALAN ECHOMIND =============
+        const questions = [
+            { id: 1, text: "You have two good job offers. What do you do?", options: ["List pros/cons for days", "Ask friends for advice", "Trust your gut feeling", "Flip a coin"] },
+            { id: 2, text: "Someone cancels plans last minute. How do you react?", options: ["Overthink why", "Feel hurt but say nothing", "Understand and move on", "Get annoyed but hide it"] },
+            { id: 3, text: "You made a mistake at work. What's your first thought?", options: ["I'm such a failure", "What if they fire me?", "Everyone makes mistakes", "How can I fix this?"] },
+            { id: 4, text: "You need to make an important decision quickly. How?", options: ["Panic and delay", "List all options carefully", "Go with first instinct", "Ask someone to decide"] },
+            { id: 5, text: "Someone criticizes your work. How do you respond?", options: ["Overthink for days", "Defend yourself immediately", "Consider if valid, then improve", "Ignore and feel hurt"] },
+            { id: 6, text: "You have a big presentation tomorrow. How do you feel?", options: ["Can't sleep, overthink", "Nervous but prepared", "Confident and ready", "Want to cancel"] },
+            { id: 7, text: "You receive unexpected negative feedback. How do you respond?", options: ["Overthink for days", "Ask for clarification", "Feel hurt but hide it", "Use it to improve"] },
+            { id: 8, text: "You have multiple tasks with tight deadlines. What's your approach?", options: ["Panic and freeze", "Prioritize systematically", "Do the easiest first", "Ask for extension"] }
+        ];
+        
+        const overthinkingScores = {
+            // Q1
+            "List pros/cons for days": 3, "Ask friends for advice": 2, "Trust your gut feeling": 1, "Flip a coin": 0,
+            // Q2
+            "Overthink why": 3, "Feel hurt but say nothing": 2, "Understand and move on": 0, "Get annoyed but hide it": 1,
+            // Q3
+            "I'm such a failure": 3, "What if they fire me?": 3, "Everyone makes mistakes": 0, "How can I fix this?": 1,
+            // Q4
+            "Panic and delay": 3, "List all options carefully": 2, "Go with first instinct": 0, "Ask someone to decide": 2,
+            // Q5
+            "Overthink for days": 3, "Defend yourself immediately": 1, "Consider if valid, then improve": 0, "Ignore and feel hurt": 2,
+            // Q6
+            "Can't sleep, overthink": 3, "Nervous but prepared": 2, "Confident and ready": 0, "Want to cancel": 3,
+            // Q7
+            "Overthink for days": 3, "Ask for clarification": 1, "Feel hurt but hide it": 2, "Use it to improve": 0,
+            // Q8
+            "Panic and freeze": 3, "Prioritize systematically": 1, "Do the easiest first": 2, "Ask for extension": 2
+        };
+        
+        const confidenceScores = {
+            // Q1
+            "List pros/cons for days": 2, "Ask friends for advice": 1, "Trust your gut feeling": 3, "Flip a coin": 0,
+            // Q2
+            "Overthink why": 0, "Feel hurt but say nothing": 1, "Understand and move on": 3, "Get annoyed but hide it": 1,
+            // Q3
+            "I'm such a failure": 0, "What if they fire me?": 0, "Everyone makes mistakes": 2, "How can I fix this?": 3,
+            // Q4
+            "Panic and delay": 0, "List all options carefully": 3, "Go with first instinct": 2, "Ask someone to decide": 1,
+            // Q5
+            "Overthink for days": 0, "Defend yourself immediately": 2, "Consider if valid, then improve": 3, "Ignore and feel hurt": 0,
+            // Q6
+            "Can't sleep, overthink": 0, "Nervous but prepared": 2, "Confident and ready": 3, "Want to cancel": 0,
+            // Q7
+            "Overthink for days": 0, "Ask for clarification": 2, "Feel hurt but hide it": 1, "Use it to improve": 3,
+            // Q8
+            "Panic and freeze": 0, "Prioritize systematically": 3, "Do the easiest first": 2, "Ask for extension": 1
+        };
+        
+        let userAnswers = {};
+        
+        function renderQuestions() {
+            const container = document.getElementById('questionsGrid');
+            container.innerHTML = '';
+            questions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.innerHTML = `
+                    <div class="question-text">${q.text}</div>
+                    <div class="options" id="options-${q.id}">
+                        ${q.options.map(opt => `<button class="option-btn" data-qid="${q.id}" data-opt="${opt}">${opt}</button>`).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const qid = parseInt(btn.dataset.qid);
+                    const opt = btn.dataset.opt;
+                    
+                    document.querySelectorAll(`.option-btn[data-qid="${qid}"]`).forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    
+                    userAnswers[qid] = opt;
+                    
+                    if (Object.keys(userAnswers).length === questions.length) {
+                        analyzeEchoMind();
+                    }
+                });
+            });
+        }
+        
+        function analyzeEchoMind() {
+            let totalOverthinking = 0;
+            let totalConfidence = 0;
+            let styles = { analytical: 0, impulsive: 0, cautious: 0, balanced: 0 };
+            
+            for (let i = 1; i <= questions.length; i++) {
+                const answer = userAnswers[i];
+                if (answer) {
+                    totalOverthinking += overthinkingScores[answer] || 1;
+                    totalConfidence += confidenceScores[answer] || 1;
+                    
+                    if (answer.includes("List") || answer.includes("carefully") || answer.includes("Consider") || answer.includes("clarification")) styles.analytical++;
+                    else if (answer.includes("instinct") || answer.includes("gut")) styles.impulsive++;
+                    else if (answer.includes("overthink") || answer.includes("panic") || answer.includes("freeze") || answer.includes("delay")) styles.cautious++;
+                    else styles.balanced++;
+                }
+            }
+            
+            const maxScore = questions.length * 3;
+            const overthinkingPercent = Math.round((totalOverthinking / maxScore) * 100);
+            const confidencePercent = Math.round((totalConfidence / maxScore) * 100);
+            
+            let decisionStyle = "Balanced";
+            if (styles.analytical > styles.impulsive && styles.analytical > styles.cautious && styles.analytical > styles.balanced) decisionStyle = "Analytical Thinker";
+            else if (styles.impulsive > styles.analytical && styles.impulsive > styles.cautious) decisionStyle = "Impulsive Decider";
+            else if (styles.cautious > styles.analytical && styles.cautious > styles.impulsive) decisionStyle = "Cautious Reflector";
+            
+            let overthinkingLabel = "";
+            if (overthinkingPercent >= 70) overthinkingLabel = "🔥 High Overthinker";
+            else if (overthinkingPercent >= 40) overthinkingLabel = "⚡ Moderate Overthinker";
+            else overthinkingLabel = "🌿 Calm & Clear";
+            
+            let confidenceLabel = "";
+            if (confidencePercent >= 70) confidenceLabel = "💪 High Confidence";
+            else if (confidencePercent >= 40) confidenceLabel = "👍 Moderate Confidence";
+            else confidenceLabel = "🌱 Low Confidence";
+            
+            document.getElementById('overthinkingValue').innerHTML = `${overthinkingPercent}%<br><span style="font-size:12px;">${overthinkingLabel}</span>`;
+            document.getElementById('confidenceValue').innerHTML = `${confidencePercent}%<br><span style="font-size:12px;">${confidenceLabel}</span>`;
+            document.getElementById('styleValue').innerHTML = decisionStyle;
+            document.getElementById('echomindResults').style.display = 'block';
+            
+            localStorage.setItem(`echomind_${currentUser.id}`, JSON.stringify({
+                overthinkingPercent,
+                confidencePercent,
+                decisionStyle,
+                answers: userAnswers,
+                trained: false
+            }));
+            
+            updateTrainingProgress();
+        }
+        
+        function updateTrainingProgress() {
+            const saved = localStorage.getItem(`echomind_${currentUser.id}`);
+            if (saved) {
+                const data = JSON.parse(saved);
+                const answeredCount = Object.keys(data.answers || {}).length;
+                const progress = (answeredCount / questions.length) * 100;
+                document.getElementById('trainingFill').style.width = `${progress}%`;
+                document.getElementById('trainingMessage').innerHTML = `📊 ${answeredCount}/${questions.length} questions answered. Train AI to activate your digital twin.`;
+                if (data.trained) {
+                    document.getElementById('trainingFill').style.width = '100%';
+                    document.getElementById('trainingMessage').innerHTML = '<i class="fas fa-check-circle"></i> ✅ AlterEgo trained! Your digital twin is ready.';
+                }
+            }
+        }
+        
+        function loadAlterEgoData() {
+            const saved = localStorage.getItem(`echomind_${currentUser.id}`);
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.trained) {
+                    document.getElementById('trainingFill').style.width = '100%';
+                    document.getElementById('trainingMessage').innerHTML = '<i class="fas fa-check-circle"></i> ✅ AlterEgo trained! Your digital twin is ready.';
+                } else {
+                    const answeredCount = Object.keys(data.answers || {}).length;
+                    document.getElementById('trainingFill').style.width = `${(answeredCount / questions.length) * 100}%`;
+                    document.getElementById('trainingMessage').innerHTML = `📊 ${answeredCount}/${questions.length} questions answered. Train AI to activate your digital twin.`;
+                }
+            }
+        }
+        
+        function trainAlterEgo() {
+            const saved = localStorage.getItem(`echomind_${currentUser.id}`);
+            if (!saved) {
+                alert('Please answer all EchoMind questions first!');
+                return;
+            }
+            const data = JSON.parse(saved);
+            if (Object.keys(data.answers).length < questions.length) {
+                alert(`Please answer all ${questions.length} questions first.`);
+                return;
+            }
+            
+            data.trained = true;
+            localStorage.setItem(`echomind_${currentUser.id}`, JSON.stringify(data));
+            
+            document.getElementById('trainingFill').style.width = '100%';
+            document.getElementById('trainingMessage').innerHTML = '<i class="fas fa-check-circle"></i> ✅ AlterEgo trained! Your digital twin is ready.';
+            
+            if (typeof confetti !== 'undefined') {
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#ff0040', '#ff8800', '#ffaa00'] });
+            }
+        }
+        
+        function askAlterEgo() {
+            const question = document.getElementById('userQuestion').value.trim();
+            if (!question) {
+                alert('Please ask a question.');
+                return;
+            }
+            
+            const saved = localStorage.getItem(`echomind_${currentUser.id}`);
+            if (!saved) {
+                alert('Please answer EchoMind questions and train AlterEgo first.');
+                return;
+            }
+            
+            const data = JSON.parse(saved);
+            if (!data.trained) {
+                alert('Please click "Train AI" first to activate your digital twin.');
+                return;
+            }
+            
+            const lowerQ = question.toLowerCase();
+            let response = "";
+            const style = data.decisionStyle;
+            const confidence = data.confidencePercent;
+            const overthinking = data.overthinkingPercent;
+            
+            if (lowerQ.includes('stress') || lowerQ.includes('anxious') || lowerQ.includes('worry')) {
+                if (overthinking >= 70) {
+                    response = "🌪️ Based on your pattern, I know you tend to overthink. Here's what I'd tell myself: Take a breath. Not everything needs a perfect solution. One step at a time.";
+                } else if (confidence >= 70) {
+                    response = "💪 I'd say: You've handled hard things before. Trust yourself. This too shall pass. Now take action.";
+                } else {
+                    response = "🌿 From how you think, I'd remind myself: Stress is temporary. You're stronger than you feel right now. Talk to someone you trust.";
+                }
+            }
+            else if (lowerQ.includes('decision') || lowerQ.includes('choose') || lowerQ.includes('option')) {
+                if (style === "Analytical Thinker") {
+                    response = "📊 Knowing me, I'd say: List pros and cons. Sleep on it. Then decide. Don't rush — quality over speed.";
+                } else if (style === "Impulsive Decider") {
+                    response = "⚡ I know myself — I'd say: Trust your gut. Your first instinct is usually right. Don't second-guess too much.";
+                } else {
+                    response = "⚖️ The me I've trained would say: Balance your heart and head. What feels right? What makes sense? Find the middle ground.";
+                }
+            }
+            else if (lowerQ.includes('mistake') || lowerQ.includes('fail') || lowerQ.includes('error')) {
+                if (overthinking >= 70) {
+                    response = "🌀 I know I'd spiral if I were you. But here's what I'd tell myself: Mistakes are proof you're trying. Forgive yourself. Learn. Move forward.";
+                } else {
+                    response = "💡 I'd say: Everyone messes up. What matters is what you do next. You've got this.";
+                }
+            }
+            else if (lowerQ.includes('confident') || lowerQ.includes('confidence')) {
+                if (confidence >= 70) {
+                    response = "🔥 My digital twin says: You're more capable than you think. Keep showing up. Confidence comes from action, not waiting.";
+                } else {
+                    response = "🌱 I'd tell myself: You don't need to be 100% confident to start. Just begin. Momentum builds confidence.";
+                }
+            }
+            else if (lowerQ.includes('overthink') || lowerQ.includes('overthinking')) {
+                response = "🧠 I know this pattern. You're overthinking again. Here's the truth: Most things you worry about never happen. Take action. Even small action breaks the loop.";
+            }
+            else {
+                response = `💬 Based on how ${currentUser.name.split(' ')[0]} thinks (${style}, ${Math.round(confidence)}% confident), I'd say: Trust your instincts. You've survived 100% of your bad days. You'll figure this out.`;
+            }
+            
+            document.getElementById('alteregoResponse').style.display = 'block';
+            document.getElementById('responseText').innerHTML = `<i class="fas fa-robot" style="color:#ff0040;"></i> ${response}`;
+        }
+        
+        // Particle Animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.3,
+                    alpha: Math.random() * 0.5 + 0.2, color: Math.random() > 0.6 ? '#00d4ff' : '#00ff88'
+                });
+            }
+        }
+        
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
+                p.x += p.speedX; p.y += p.speedY;
+                if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
+        
+        async function loadUser() {
+            const userStr = localStorage.getItem('neuroprint_user');
+            if (!userStr) { window.location.href = '/login'; return; }
+            currentUser = JSON.parse(userStr);
+            document.getElementById('userName').innerHTML = `<i class="fas fa-user-astronaut"></i> ${currentUser.name.toUpperCase()}`;
+            loadAlterEgoData();
+        }
+        
+        function logout() { localStorage.removeItem('neuroprint_user'); window.location.href = '/login'; }
+        
+        function init() {
+            initParticles(); drawParticles();
+            renderQuestions();
+            document.getElementById('trainBtn').addEventListener('click', trainAlterEgo);
+            document.getElementById('askBtn').addEventListener('click', askAlterEgo);
+            document.getElementById('userQuestion').addEventListener('keypress', (e) => { if (e.key === 'Enter') askAlterEgo(); });
+            updateTrainingProgress();
+        }
+        
+        loadUser().then(() => { init(); });
+    </script>
+</body>
+</html>

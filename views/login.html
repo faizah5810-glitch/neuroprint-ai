@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPrint | Intelligent Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    
+    <div class="container">
+        <div class="neural-bg"></div>
+        
+        <div class="card">
+            <div class="logo">
+                <span class="neon-text">NEUROPRINT</span>
+                <span class="subtitle">INTELLIGENT BEHAVIOR SYSTEM</span>
+            </div>
+            
+            <h2>SECURE ACCESS</h2>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="email" id="email" required>
+                    <label>EMAIL ADDRESS</label>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="password" required>
+                    <label>PASSWORD</label>
+                </div>
+                
+                <button type="button" class="verify-btn" id="verifyBtn">🔐 VERIFY IDENTITY</button>
+                
+                <div class="verify-status" id="verifyStatus">
+                    <span class="status-text">Please verify your identity first.</span>
+                </div>
+                
+                <div class="live-tracker" id="liveTracker" style="display: none;">
+                    <div class="tracker-label">🎭 LIVE EMOTION ANALYSIS</div>
+                    <div class="meter-container">
+                        <div class="meter-bar" id="meterBar"></div>
+                        <div class="meter-marker" id="meterMarker"></div>
+                    </div>
+                    <div class="meter-scale">
+                        <span>😌 CALM</span>
+                        <span>😐 NEUTRAL</span>
+                        <span>😰 STRESS</span>
+                        <span>😫 ANXIOUS</span>
+                    </div>
+                    <div class="live-emotion-text" id="liveEmotionText">—</div>
+                </div>
+                
+                <div class="fingerprint-area">
+                    <p class="instruction">🔷 PLACE & HOLD YOUR FINGER TO LOGIN 🔷</p>
+                    <div class="fingerprint-btn disabled" id="fingerprintBtn">
+                        <div class="fingerprint-icon">🖐️</div>
+                        <div class="ripple"></div>
+                        <div class="hover-ripple"></div>
+                    </div>
+                    
+                    <div class="scan-progress-container" id="scanProgressContainer" style="display: none;">
+                        <div class="scan-progress-bar"><div class="scan-progress-fill" id="scanProgressFill"></div></div>
+                        <div class="scan-progress-label" id="scanProgressLabel">Hold to scan...</div>
+                    </div>
+                    
+                    <div class="scan-status" id="scanStatus">⚡ AWAITING FINGERPRINT SCAN ⚡</div>
+                    <div class="behavior-detail" id="behaviorDetail"></div>
+                </div>
+                
+                <div class="summary-card" id="summaryCard" style="display: none;">
+                    <div class="summary-header">
+                        <span class="summary-icon">🧠</span>
+                        <span class="summary-title">SCAN SUMMARY</span>
+                    </div>
+                    <div class="summary-grid">
+                        <div class="summary-item"><span class="summary-label">Emotion</span><span class="summary-value" id="summaryEmotion">—</span></div>
+                        <div class="summary-item"><span class="summary-label">Risk Level</span><span class="summary-value" id="summaryRisk">—</span></div>
+                        <div class="summary-item"><span class="summary-label">Duration</span><span class="summary-value" id="summaryDuration">—</span></div>
+                        <div class="summary-item"><span class="summary-label">Pressure</span><span class="summary-value" id="summaryPressure">—</span></div>
+                        <div class="summary-item"><span class="summary-label">Retry</span><span class="summary-value" id="summaryRetry">—</span></div>
+                        <div class="summary-item"><span class="summary-label">Speed</span><span class="summary-value" id="summarySpeed">—</span></div>
+                    </div>
+                    <div class="summary-suggestion" id="summarySuggestion">💡 Stay mindful of your breathing.</div>
+                </div>
+                
+                <div class="result-panel" id="resultPanel" style="display: none;">
+                    <div class="emotion-badge" id="emotionBadge"></div>
+                    <div class="risk-badge" id="riskBadge"></div>
+                    <div class="ai-suggestion" id="aiSuggestion"></div>
+                </div>
+                
+                <div class="voice-toggle">
+                    <label class="switch"><input type="checkbox" id="voiceToggle" checked><span class="slider"></span></label>
+                    <span class="voice-label">🎤 VOICE FEEDBACK</span>
+                </div>
+                
+                <button type="submit" id="submitBtn" disabled>⚡ AUTHENTICATE ⚡</button>
+            </form>
+            
+            <p class="login-link">🔗 NEW USER? <a href="/register">REGISTER HERE</a> 🔗</p>
+        </div>
+    </div>
+    
+    <style>
+        /* ===== ALL STYLES ===== */
+        .particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .container { position: relative; z-index: 1; }
+        .verify-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #ffaa0020, #ffaa0040); border: 1.5px solid #ffaa00; color: #ffaa00; border-radius: 40px; cursor: pointer; font-weight: 700; font-family: 'Orbitron', monospace; font-size: 14px; letter-spacing: 1px; transition: all 0.3s; margin-top: 5px; }
+        .verify-btn:hover:not(:disabled) { background: linear-gradient(135deg, #ffaa0040, #ffaa0060); transform: scale(1.02); box-shadow: 0 0 20px rgba(255,170,0,0.3); }
+        .verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .verify-status { margin: 15px 0; padding: 12px; border-radius: 20px; text-align: center; background: rgba(0,0,0,0.3); border: 1px solid #333; transition: all 0.3s; }
+        .verify-status.verified { border-color: #00ff88; background: rgba(0,255,136,0.1); }
+        .verify-status.failed { border-color: #ff0040; background: rgba(255,0,64,0.1); }
+        .status-text { font-size: 14px; color: #aaa; font-weight: 500; }
+        .verify-status.verified .status-text { color: #00ff88; }
+        .verify-status.failed .status-text { color: #ff0040; }
+        .fingerprint-btn.disabled { opacity: 0.4; cursor: not-allowed; border-color: #555 !important; box-shadow: none !important; }
+        .fingerprint-btn.disabled:hover { transform: none !important; border-color: #555 !important; box-shadow: none !important; }
+        .fingerprint-btn.disabled .fingerprint-icon { opacity: 0.5; }
+        .fingerprint-btn.disabled .hover-ripple { display: none; }
+        .fingerprint-btn.active { border-color: #00ff88 !important; box-shadow: 0 0 40px rgba(0,255,136,0.5) !important; }
+        .fingerprint-btn.active .fingerprint-icon { color: #00ff88; }
+        .fingerprint-btn.active:hover { box-shadow: 0 0 60px rgba(0,255,136,0.7) !important; }
+        .scan-progress-container { margin: 15px auto 10px; max-width: 300px; }
+        .scan-progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
+        .scan-progress-fill { height: 100%; width: 0%; border-radius: 20px; background: linear-gradient(90deg, #00ff88, #ffaa00, #ff0040); transition: width 0.05s linear; }
+        .scan-progress-label { text-align: center; font-size: 10px; color: #888; margin-top: 5px; }
+        .summary-card { background: rgba(0,0,0,0.5); border-radius: 20px; padding: 18px 20px; margin: 15px 0; border: 1px solid rgba(0,212,255,0.3); animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .summary-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .summary-icon { font-size: 24px; }
+        .summary-title { font-family: 'Orbitron', monospace; font-size: 14px; color: #00d4ff; letter-spacing: 1px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+        .summary-item { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 8px 6px; text-align: center; }
+        .summary-label { display: block; font-size: 9px; color: #888; text-transform: uppercase; }
+        .summary-value { display: block; font-size: 14px; font-weight: 700; color: #00d4ff; margin-top: 3px; font-family: 'Orbitron', monospace; }
+        .summary-suggestion { margin-top: 12px; padding: 10px; background: rgba(0,212,255,0.08); border-radius: 12px; font-size: 12px; color: #ccc; text-align: center; border-left: 3px solid #00ff88; }
+        .live-tracker { background: rgba(0,0,0,0.6); border-radius: 20px; padding: 15px 20px; margin: 20px 0; border: 1px solid rgba(0,212,255,0.3); }
+        .tracker-label { color: #00d4ff; font-size: 12px; font-family: 'Orbitron', monospace; letter-spacing: 2px; margin-bottom: 15px; text-align: center; }
+        .meter-container { position: relative; height: 12px; background: linear-gradient(90deg, #00ff88, #ffff00, #ffaa00, #ff0040, #ff0000); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+        .meter-bar { position: absolute; width: 100%; height: 100%; background: rgba(255,255,255,0.3); transform: translateX(0%); transition: transform 0.05s linear; }
+        .meter-marker { position: absolute; width: 4px; height: 20px; background: white; top: -4px; border-radius: 2px; box-shadow: 0 0 10px white; transition: left 0.05s linear; }
+        .meter-scale { display: flex; justify-content: space-between; color: #888; font-size: 9px; font-family: 'Poppins', sans-serif; margin-top: 5px; }
+        .live-emotion-text { text-align: center; font-size: 14px; font-weight: bold; margin-top: 12px; font-family: 'Orbitron', monospace; }
+        .ai-suggestion { margin-top: 15px; padding: 12px; background: rgba(0,212,255,0.15); border-radius: 16px; font-size: 13px; font-weight: 500; border-left: 3px solid #00d4ff; text-align: left; color: #ccc; min-height: 60px; }
+        .voice-toggle { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin: 15px 0 5px; }
+        .voice-label { color: #aaa; font-size: 12px; font-family: 'Poppins', sans-serif; }
+        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: 0.3s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #00d4ff; }
+        input:checked + .slider:before { transform: translateX(24px); }
+        .fingerprint-btn { width: 140px; height: 140px; margin: 0 auto; background: linear-gradient(145deg, #0a0a0f, #050508); border-radius: 70px; display: flex; align-items: center; justify-content: center; position: relative; transition: all 0.2s ease; border: 2px solid #333; overflow: hidden; }
+        .fingerprint-icon { font-size: 60px; z-index: 2; transition: all 0.2s ease; }
+        .fingerprint-btn:hover:not(.disabled) { border-color: #00d4ff; box-shadow: 0 0 40px rgba(0,212,255,0.5); transform: scale(1.03); }
+        .fingerprint-btn:hover:not(.disabled) .fingerprint-icon { transform: scale(1.08); }
+        .hover-ripple { position: absolute; width: 100%; height: 100%; border-radius: 70px; background: radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(0,212,255,0) 70%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .fingerprint-btn:hover:not(.disabled) .hover-ripple { opacity: 1; animation: hoverRipple 1.5s ease-out infinite; }
+        @keyframes hoverRipple { 0% { transform: scale(0.5); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
+        .ripple { position: absolute; width: 100%; height: 100%; border-radius: 70px; background: rgba(0,212,255,0.4); opacity: 0; }
+        .fingerprint-btn.scanning .ripple { animation: rippleEffect 1.5s infinite; }
+        @keyframes rippleEffect { 0% { transform: scale(0.7); opacity: 0.6; } 100% { transform: scale(1.8); opacity: 0; } }
+        .fingerprint-btn.scanning { border-color: #00d4ff; box-shadow: 0 0 50px rgba(0,212,255,0.8); }
+        .scan-status { margin-top: 22px; font-size: 14px; font-weight: 600; }
+        .behavior-detail { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .detail-item { background: rgba(0,212,255,0.12); padding: 8px 18px; border-radius: 40px; font-size: 13px; color: #00d4ff; border: 1px solid #00d4ff55; font-weight: 600; backdrop-filter: blur(4px); transition: all 0.2s ease; }
+        .detail-item:hover { background: rgba(0,212,255,0.25); transform: translateY(-2px); }
+        button[type="submit"] { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d4ff, #0088aa); border: none; border-radius: 40px; color: #0a0a0a; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 25px; font-family: 'Orbitron', monospace; letter-spacing: 1px; }
+        button[type="submit"]:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,212,255,0.5); background: linear-gradient(135deg, #00e4ff, #0099bb); letter-spacing: 2px; }
+        button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+        .login-link { text-align: center; margin-top: 28px; color: #aaa; font-size: 14px; }
+        .login-link a { color: #00d4ff; text-decoration: none; transition: all 0.2s; }
+        .login-link a:hover { text-shadow: 0 0 8px #00d4ff; text-decoration: underline; }
+        .result-panel { margin-top: 20px; padding: 18px; border-radius: 24px; text-align: center; backdrop-filter: blur(8px); box-shadow: 0 0 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); }
+        .result-panel.stress { background: linear-gradient(135deg, rgba(255,0,64,0.3), rgba(255,0,64,0.12)); border: 1px solid #ff0040; box-shadow: 0 0 25px rgba(255,0,64,0.4); }
+        .result-panel.calm { background: linear-gradient(135deg, rgba(0,255,136,0.25), rgba(0,255,136,0.1)); border: 1px solid #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+        .result-panel.neutral { background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(0,212,255,0.1)); border: 1px solid #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+        .result-panel.anxious { background: linear-gradient(135deg, rgba(255,100,0,0.3), rgba(255,100,0,0.12)); border: 1px solid #ff6400; box-shadow: 0 0 20px rgba(255,100,0,0.4); }
+        .result-panel.frustrated { background: linear-gradient(135deg, rgba(255,0,0,0.3), rgba(255,0,0,0.12)); border: 1px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.4); }
+        .emotion-badge { font-size: 20px; font-weight: 800; margin-bottom: 8px; font-family: 'Orbitron', monospace; }
+        .risk-badge { font-size: 15px; font-weight: 600; }
+        .fingerprint-area { background: rgba(8,8,12,0.7); border-radius: 28px; padding: 30px 25px; margin: 25px 0; text-align: center; border: 1px solid #2a2a2a; transition: all 0.3s ease; }
+        .fingerprint-area:hover { border-color: #00d4ff; box-shadow: 0 0 30px rgba(0,212,255,0.15); transform: translateY(-3px); }
+        .instruction { color: #00d4ff; font-size: 18px; font-weight: 700; margin-bottom: 25px; letter-spacing: 2px; font-family: 'Orbitron', monospace; text-shadow: 0 0 10px rgba(0,212,255,0.5); }
+        .card { position: relative; background: rgba(8,8,12,0.75); backdrop-filter: blur(20px); border-radius: 48px; padding: 45px 40px; overflow: hidden; transition: all 0.4s cubic-bezier(0.2,0.9,0.4,1.1); z-index: 2; }
+        .card::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff, #0088aa, #00d4ff, #00ff88); background-size: 300% 100%; border-radius: 50px; z-index: -1; animation: borderFlow 3s linear infinite; opacity: 0.6; }
+        @keyframes borderFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .card::after { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; background: rgba(8,8,12,0.95); border-radius: 46px; z-index: -1; }
+        .neon-text { font-family: 'Orbitron', monospace; font-size: 32px; font-weight: 900; background: linear-gradient(135deg, #00d4ff, #00ff88); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 3px; }
+        .input-group { position: relative; margin-bottom: 35px; }
+        .input-group input { width: 100%; padding: 18px; background: rgba(15,15,20,0.9); border: 1.5px solid #2a2a2a; border-radius: 20px; color: #fff; font-size: 16px; outline: none; transition: all 0.3s ease; }
+        .input-group input:focus { border-color: #00d4ff; box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+        .input-group label { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #aaa; transition: all 0.3s; pointer-events: none; font-size: 14px; }
+        .input-group input:focus + label, .input-group input:valid + label { top: -8px; font-size: 11px; background: #08080c; padding: 0 8px; color: #00d4ff; }
+        .typing-cursor { display: inline-block; width: 2px; height: 14px; background-color: #00d4ff; margin-left: 2px; animation: blink 0.8s infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+        @media (max-width:600px) { .summary-grid { grid-template-columns: repeat(2,1fr); } .card { padding: 25px 20px; } .neon-text { font-size: 24px; } }
+    </style>
+    
+    <script>
+        // ===== PARTICLE =====
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [], particleAnimationId = null;
+        function initParticles() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight; particles = [];
+            for (let i = 0; i < 80; i++) {
+                particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 1, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.3, alpha: Math.random() * 0.5 + 0.2, color: Math.random() > 0.6 ? '#00d4ff' : '#00ff88' });
+            }
+        }
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill(); p.x += p.speedX; p.y += p.speedY; if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0; if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0; });
+            particleAnimationId = requestAnimationFrame(drawParticles);
+        }
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
+        initParticles(); drawParticles();
+        
+        // ===== SOUND =====
+        function playBeep(f, d, t) { try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const osc = ac.createOscillator(); const gain = ac.createGain(); osc.connect(gain); gain.connect(ac.destination); osc.frequency.value = f; osc.type = t || 'sine'; gain.gain.value = 0.3; osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, ac.currentTime + d/1000); osc.stop(ac.currentTime + d/1000); if (ac.state === 'suspended') ac.resume(); } catch(e) {} }
+        function playSuccessSound() { playBeep(880,200,'sine'); }
+        function playFailSound() { playBeep(440,300,'sawtooth'); }
+        
+        // ===== SPEECH =====
+        function speakText(text, callback) {
+            if (!voiceEnabled) { if (callback) callback(); return; }
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.9; u.pitch = 1.1; u.lang = 'en-US';
+                u.onend = () => { if (callback) callback(); };
+                u.onerror = () => { if (callback) callback(); };
+                window.speechSynthesis.speak(u);
+            } else { if (callback) callback(); }
+        }
+        
+        // ===== TYPING ANIMATION (LONG SUGGESTION) =====
+        async function typeText(element, text, speed) {
+            speed = speed || 20;
+            element.innerHTML = '';
+            for (let i = 0; i < text.length; i++) {
+                element.innerHTML += text.charAt(i);
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            element.appendChild(cursor);
+        }
+        
+        // ===== GET SUGGESTION =====
+        function getSuggestion(emotion) {
+            const s = {
+                'Stress': { short: 'Take a deep breath. You\'ve got this.', long: 'I can sense you\'re feeling stressed right now. That\'s okay. Take a moment to breathe deeply. You\'ve handled tough situations before, and you can handle this too.' },
+                'Anxious': { short: 'Pause. Breathe. You are safe.', long: 'It seems like you\'re feeling a bit anxious. That\'s completely normal. Try to pause, take a slow breath, and remind yourself — you are safe and you are capable.' },
+                'Frustrated': { short: 'Step back. You can solve this.', long: 'I notice some frustration in your energy. That\'s understandable. Step back for a moment, take three deep breaths, and remember — you don\'t have to solve everything all at once.' },
+                'Tired / Low Energy': { short: 'Rest. You deserve a break.', long: 'You sound tired, and that\'s okay. Your body is asking for rest. Take a short break, drink some water, and give yourself permission to recharge.' },
+                'Confident / Calm': { short: 'You are in your zone. Keep going!', long: 'You\'re in a great state right now — calm, confident, and focused. This is your moment. Use this energy to tackle whatever comes next.' },
+                'Efficient': { short: 'Flow state detected. Use it wisely.', long: 'You\'re in flow mode — sharp, fast, and focused. This is your peak performance state. Make the most of it while it lasts.' },
+                'Unsure': { short: 'Slow down. Clarity will come.', long: 'It feels like you\'re unsure about something right now. That\'s okay. You don\'t need all the answers today. Slow down, and trust yourself to figure it out.' },
+                'Neutral': { short: 'Balanced and steady. Keep it up.', long: 'You seem balanced and steady today — not too high, not too low. That\'s a good place to be. Stay grounded and keep moving forward.' }
+            };
+            return s[emotion] || { short: 'You are doing great. Keep going.', long: 'You\'re doing well. Stay mindful of your breathing and keep moving forward with confidence.' };
+        }
+        
+        // ===== DOM =====
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const verifyStatus = document.getElementById('verifyStatus');
+        const statusText = document.querySelector('.status-text');
+        const fingerprintBtn = document.getElementById('fingerprintBtn');
+        const scanStatus = document.getElementById('scanStatus');
+        const behaviorDetail = document.getElementById('behaviorDetail');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultPanel = document.getElementById('resultPanel');
+        const emotionBadge = document.getElementById('emotionBadge');
+        const riskBadge = document.getElementById('riskBadge');
+        const aiSuggestion = document.getElementById('aiSuggestion');
+        const voiceToggle = document.getElementById('voiceToggle');
+        const scanProgressContainer = document.getElementById('scanProgressContainer');
+        const scanProgressFill = document.getElementById('scanProgressFill');
+        const scanProgressLabel = document.getElementById('scanProgressLabel');
+        const summaryCard = document.getElementById('summaryCard');
+        const liveTracker = document.getElementById('liveTracker');
+        const liveEmotionText = document.getElementById('liveEmotionText');
+        
+        let voiceEnabled = true, isVerified = false, isRedirecting = false, isScanning = false, scanStartTime = 0, progressInterval = null, trackerInterval = null, currentEmotionEstimate = 'Neutral';
+        let scanData = { duration: 0, pressure: 50, retry: 0, speed: 'normal' };
+        let verifiedUser = null;
+        
+        voiceToggle.addEventListener('change', e => { voiceEnabled = e.target.checked; });
+        
+        // ===== VERIFY =====
+        verifyBtn.addEventListener('click', async function() {
+            const email = emailInput.value.trim(), password = passwordInput.value.trim();
+            if (!email || !password) {
+                verifyStatus.className = 'verify-status failed';
+                statusText.textContent = '⚠️ Please enter both email and password.';
+                speakText('Please enter both email and password.');
+                return;
+            }
+            verifyBtn.disabled = true; verifyBtn.innerHTML = '⏳ VERIFYING...';
+            verifyStatus.className = 'verify-status';
+            statusText.textContent = '⏳ Verifying your identity...';
+            try {
+                const res = await fetch('/api/check-identity', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const result = await res.json();
+                if (result.success) {
+                    verifiedUser = result.user; isVerified = true;
+                    verifyStatus.className = 'verify-status verified';
+                    statusText.textContent = '✅ Identity verified. You may now scan your fingerprint.';
+                    speakText('Identity verified. You may now scan your fingerprint.');
+                    fingerprintBtn.classList.remove('disabled'); fingerprintBtn.classList.add('active');
+                    scanStatus.innerHTML = '🟢 FINGERPRINT READY — SCAN NOW 🟢'; scanStatus.style.color = '#00ff88';
+                } else {
+                    isVerified = false;
+                    verifyStatus.className = 'verify-status failed';
+                    statusText.textContent = '❌ Identity not recognized. Please check your credentials.';
+                    speakText('Identity not recognized. Please check your credentials.');
+                    fingerprintBtn.classList.add('disabled'); fingerprintBtn.classList.remove('active');
+                    scanStatus.innerHTML = '⚡ AWAITING FINGERPRINT SCAN ⚡'; scanStatus.style.color = '#aaa';
+                }
+            } catch(e) {
+                verifyStatus.className = 'verify-status failed';
+                statusText.textContent = '❌ Network error. Please try again.';
+                speakText('Network error. Please try again.');
+            }
+            verifyBtn.disabled = false; verifyBtn.innerHTML = '🔐 VERIFY IDENTITY';
+        });
+        
+        // ===== LIVE TRACKER =====
+        function updateLiveTracker(pressure, retry, duration) {
+            let v = 0;
+            if (pressure > 75 && retry > 2) { v = 3; currentEmotionEstimate = 'ANXIOUS'; liveEmotionText.style.color = '#ff6400'; }
+            else if (pressure > 70 && retry > 1) { v = 2.5; currentEmotionEstimate = 'STRESS'; liveEmotionText.style.color = '#ff0040'; }
+            else if (pressure > 65) { v = 2; currentEmotionEstimate = 'TENSE'; liveEmotionText.style.color = '#ffaa00'; }
+            else if (retry > 2) { v = 2; currentEmotionEstimate = 'FRUSTRATED'; liveEmotionText.style.color = '#ff0000'; }
+            else if (duration < 500) { v = 1.5; currentEmotionEstimate = 'RUSHED'; liveEmotionText.style.color = '#ffaa00'; }
+            else if (duration > 3000 && pressure < 40) { v = 0.5; currentEmotionEstimate = 'TIRED'; liveEmotionText.style.color = '#888'; }
+            else if (pressure < 45 && duration < 1500 && retry === 0) { v = 0.2; currentEmotionEstimate = 'CALM'; liveEmotionText.style.color = '#00ff88'; }
+            else { v = 1; currentEmotionEstimate = 'NEUTRAL'; liveEmotionText.style.color = '#00d4ff'; }
+            const pct = (v / 4) * 100;
+            document.getElementById('meterBar').style.transform = `translateX(-${100 - pct}%)`;
+            document.getElementById('meterMarker').style.left = `calc(${pct}% - 2px)`;
+            liveEmotionText.innerHTML = `🎭 ${currentEmotionEstimate}`;
+        }
+        function startLiveTracker() {
+            liveTracker.style.display = 'block'; scanData.retry = 0;
+            if (trackerInterval) clearInterval(trackerInterval);
+            let mp = 40, inc = true;
+            trackerInterval = setInterval(() => {
+                if (inc) { mp += 8; if (mp >= 85) inc = false; } else { mp -= 5; if (mp <= 35) inc = true; }
+                updateLiveTracker(mp, scanData.retry, 1000);
+            }, 200);
+        }
+        function stopLiveTracker() { if (trackerInterval) { clearInterval(trackerInterval); trackerInterval = null; } }
+        
+        // ===== PROGRESS BAR =====
+        function startProgressBar() {
+            scanProgressContainer.style.display = 'block';
+            let p = 0; scanProgressFill.style.width = '0%'; scanProgressLabel.textContent = 'Hold to scan...';
+            if (progressInterval) clearInterval(progressInterval);
+            progressInterval = setInterval(() => {
+                p += 2; if (p > 100) p = 100;
+                scanProgressFill.style.width = p + '%';
+                if (p < 30) { scanProgressLabel.textContent = '🔍 Analyzing...'; scanProgressLabel.style.color = '#00ff88'; }
+                else if (p < 60) { scanProgressLabel.textContent = '🔄 Processing...'; scanProgressLabel.style.color = '#ffaa00'; }
+                else if (p < 85) { scanProgressLabel.textContent = '⚡ Almost done...'; scanProgressLabel.style.color = '#ffaa00'; }
+                else { scanProgressLabel.textContent = '✅ Finalizing...'; scanProgressLabel.style.color = '#00d4ff'; }
+            }, 40);
+        }
+        function stopProgressBar() {
+            if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+            scanProgressFill.style.width = '100%';
+            scanProgressLabel.textContent = '✅ Scan complete!'; scanProgressLabel.style.color = '#00ff88';
+            setTimeout(() => { scanProgressContainer.style.display = 'none'; scanProgressFill.style.width = '0%'; }, 600);
+        }
+        
+        // ===== SUMMARY =====
+        function showSummary(emotion, risk, duration, pressure, retry, speed, suggestionShort) {
+            document.getElementById('summaryEmotion').textContent = emotion;
+            document.getElementById('summaryRisk').textContent = risk;
+            document.getElementById('summaryDuration').textContent = duration + 'ms';
+            document.getElementById('summaryPressure').textContent = pressure + '/100';
+            document.getElementById('summaryRetry').textContent = retry;
+            document.getElementById('summarySpeed').textContent = speed.charAt(0).toUpperCase() + speed.slice(1);
+            document.getElementById('summarySuggestion').innerHTML = '💡 ' + suggestionShort;
+            const colors = { 'High': '#ff0040', 'Medium': '#ffaa00', 'Low': '#00ff88' };
+            document.querySelectorAll('.summary-value').forEach(el => { if (el.id === 'summaryRisk') el.style.color = colors[risk] || '#00d4ff'; });
+            summaryCard.style.display = 'block';
+        }
+        function getEmotionFromData(p, r, d) {
+            if (p > 70 && r > 2) return 'Stress';
+            if (p > 80) return 'Anxious';
+            if (r > 3) return 'Frustrated';
+            if (d > 3000 && p < 40) return 'Tired / Low Energy';
+            if (d < 800 && p < 50 && r === 0) return 'Confident / Calm';
+            if (d < 1000 && r === 0) return 'Efficient';
+            if (d > 1500 && r > 1) return 'Unsure';
+            return 'Neutral';
+        }
+        function getRiskFromData(p, r, d) {
+            if (p > 70 && r > 2) return 'High';
+            if (p > 80) return 'High';
+            if (r > 3) return 'High';
+            if (d > 3000 && p < 40) return 'Medium';
+            if (d > 1500 && r > 1) return 'Medium';
+            return 'Low';
+        }
+        
+        // ===== SCAN =====
+        fingerprintBtn.addEventListener('mousedown', startScan);
+        fingerprintBtn.addEventListener('mouseup', endScan);
+        fingerprintBtn.addEventListener('touchstart', startScan);
+        fingerprintBtn.addEventListener('touchend', endScan);
+        
+        function startScan(e) {
+            if (!isVerified) {
+                speakText('Please verify your identity first.');
+                scanStatus.innerHTML = '⚠️ VERIFY IDENTITY FIRST ⚠️'; scanStatus.style.color = '#ffaa00';
+                setTimeout(() => { scanStatus.innerHTML = '⚡ AWAITING FINGERPRINT SCAN ⚡'; scanStatus.style.color = '#aaa'; }, 2000);
+                return;
+            }
+            e.preventDefault();
+            isScanning = true; scanStartTime = Date.now();
+            fingerprintBtn.classList.add('scanning');
+            scanStatus.innerHTML = '🟢 SCANNING ACTIVE — HOLD FIRMLY 🟢'; scanStatus.style.color = '#00d4ff';
+            resultPanel.style.display = 'none'; summaryCard.style.display = 'none';
+            startLiveTracker(); startProgressBar();
+        }
+        
+        function endScan(e) {
+            e.preventDefault();
+            if (!isScanning) return;
+            const duration = Date.now() - scanStartTime;
+            isScanning = false; fingerprintBtn.classList.remove('scanning');
+            stopLiveTracker(); stopProgressBar();
+            
+            let pressure = duration < 500 ? 30 : (duration < 1500 ? 60 : 85);
+            let speed = duration < 1000 ? 'fast' : (duration < 2000 ? 'normal' : 'slow');
+            let retry = scanData.retry, success = true;
+            
+            if (duration < 300) {
+                success = false; playFailSound();
+                scanStatus.innerHTML = '❌ SCAN FAILED — TOO FAST. TRY AGAIN ❌'; scanStatus.style.color = '#ff0040';
+                retry++;
+            } else if (duration > 4000) {
+                success = false; playFailSound();
+                scanStatus.innerHTML = '❌ SCAN TIMEOUT — TOO SLOW. TRY AGAIN ❌'; scanStatus.style.color = '#ff0040';
+                retry++;
+            } else {
+                success = true; playSuccessSound();
+                scanStatus.innerHTML = '✅ FINGERPRINT CAPTURED — BEHAVIOR ANALYZING ✅'; scanStatus.style.color = '#00ff88';
+            }
+            
+            if (!success) {
+                scanData.retry = retry;
+                setTimeout(() => { scanStatus.innerHTML = '⚡ AWAITING FINGERPRINT SCAN ⚡'; scanStatus.style.color = '#aaa'; }, 1500);
+                return;
+            }
+            
+            scanData.duration = duration; scanData.pressure = pressure; scanData.speed = speed;
+            updateLiveTracker(pressure, retry, duration);
+            
+            behaviorDetail.innerHTML = `
+                <div class="detail-item">⏱️ DURATION: ${duration}ms</div>
+                <div class="detail-item">💪 PRESSURE: ${pressure}/100</div>
+                <div class="detail-item">⚡ SPEED: ${speed.toUpperCase()}</div>
+                <div class="detail-item">🔄 RETRY: ${scanData.retry}</div>
+            `;
+            
+            const tempEmotion = getEmotionFromData(pressure, retry, duration);
+            const tempRisk = getRiskFromData(pressure, retry, duration);
+            const sugg = getSuggestion(tempEmotion);
+            
+            showSummary(tempEmotion, tempRisk, duration, pressure, scanData.retry, speed, sugg.short);
+            
+            // ===== VOICE FEEDBACK LEPAS SCAN (GUNA SHORT SUGGESTION) =====
+            speakText(`Scan complete. Emotion detected: ${tempEmotion}. Risk level: ${tempRisk}. ${sugg.short}`);
+            
+            submitBtn.disabled = false;
+        }
+        
+        // ===== SUBMIT =====
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (isRedirecting) return;
+            if (!isVerified) { speakText('Please verify your identity first.'); return; }
+            if (scanData.duration === 0) { speakText('Please scan your fingerprint first.'); return; }
+            
+            submitBtn.disabled = true; submitBtn.innerHTML = '🔐 AUTHENTICATING... 🔐';
+            
+            const res = await fetch('/api/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput.value.trim(), behavior_data: scanData })
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                localStorage.setItem('neuroprint_user', JSON.stringify(result.user));
+                resultPanel.style.display = 'block';
+                const emotion = result.analysis.emotion, risk = result.analysis.risk;
+                const sugg = getSuggestion(emotion);
+                
+                emotionBadge.innerHTML = `🧠 EMOTION: ${emotion.toUpperCase()} 🧠`;
+                riskBadge.innerHTML = `⚠️ RISK LEVEL: ${risk.toUpperCase()} ⚠️`;
+                
+                // ===== TYPING ANIMATION GUNA LONG SUGGESTION =====
+                await typeText(aiSuggestion, `💡 ${sugg.long}`, 20);
+                
+                let panelClass = 'neutral';
+                if (emotion === 'Stress') panelClass = 'stress';
+                else if (emotion === 'Anxious') panelClass = 'anxious';
+                else if (emotion === 'Frustrated') panelClass = 'frustrated';
+                else if (emotion === 'Confident / Calm') panelClass = 'calm';
+                else if (emotion === 'Efficient') panelClass = 'calm';
+                resultPanel.className = `result-panel ${panelClass}`;
+                scanStatus.innerHTML = '✅ AUTHENTICATION SUCCESSFUL — PREPARING VOICE ✅'; scanStatus.style.color = '#00ff88';
+                
+                // ===== VOICE FEEDBACK LEPAS AUTHENTICATE (GUNA LONG SUGGESTION) =====
+                const voiceMsg = `Authentication successful. Emotion detected: ${emotion}. Risk level: ${risk}. ${sugg.long}. Redirecting to dashboard.`;
+                isRedirecting = true;
+                speakText(voiceMsg, () => { setTimeout(() => { window.location.href = '/dashboard'; }, 500); });
+                
+            } else {
+                playFailSound();
+                alert('❌ LOGIN FAILED: ' + result.message);
+                submitBtn.disabled = false; submitBtn.innerHTML = '⚡ AUTHENTICATE ⚡';
+                speakText('Login failed. Please try again.');
+            }
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (trackerInterval) clearInterval(trackerInterval);
+            if (progressInterval) clearInterval(progressInterval);
+            window.speechSynthesis.cancel();
+            if (particleAnimationId) cancelAnimationFrame(particleAnimationId);
+        });
+    </script>
+</body>
+</html>
