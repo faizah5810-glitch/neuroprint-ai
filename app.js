@@ -1,5 +1,4 @@
 const express = require('express');
-const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
@@ -31,13 +30,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// ============= DATABASE CONNECTION (AUTO-DETECT) =============
+// ============= DATABASE CONNECTION =============
 let db;
+let isPostgres = false;
 
-// Check if running on Render (has DATABASE_URL)
 if (process.env.DATABASE_URL) {
-    // Running on Render — use PostgreSQL
+    // Running on Render — PostgreSQL
     const { Client } = require('pg');
+    isPostgres = true;
     db = new Client({
         connectionString: process.env.DATABASE_URL,
         ssl: { rejectUnauthorized: false }
@@ -46,7 +46,9 @@ if (process.env.DATABASE_URL) {
         .then(() => console.log('✅ Connected to PostgreSQL (Render)'))
         .catch(err => console.error('PostgreSQL connection failed:', err));
 } else {
-    // Running locally — use MySQL (XAMPP)
+    // Running locally — MySQL
+    const mysql = require('mysql2');
+    isPostgres = false;
     db = mysql.createConnection({
         host: 'localhost',
         user: 'root',
@@ -59,6 +61,45 @@ if (process.env.DATABASE_URL) {
             return;
         }
         console.log('✅ Connected to MySQL (Local)');
+    });
+}
+
+// ============= HELPER: Universal Query =============
+function queryDB(sql, params) {
+    return new Promise((resolve, reject) => {
+        if (isPostgres) {
+            // PostgreSQL — guna $1, $2, ...
+            let pgSql = sql;
+            // Tukar ? kepada $1, $2, ...
+            let paramIndex = 1;
+            pgSql = pgSql.replace(/\?/g, () => `$${paramIndex++}`);
+            
+            db.query(pgSql, params, (err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    // Format sama macam MySQL
+                    resolve({
+                        rows: result.rows || [],
+                        insertId: result.rows?.[0]?.id || null,
+                        affectedRows: result.rowCount || 0
+                    });
+                }
+            });
+        } else {
+            // MySQL
+            db.query(sql, params, (err, results) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve({
+                        rows: results,
+                        insertId: results.insertId || null,
+                        affectedRows: results.affectedRows || 0
+                    });
+                }
+            });
+        }
     });
 }
 
@@ -266,19 +307,29 @@ async function generateWeeklyReport(userId, userEmail, userName, scans) {
 async function sendWeeklyReports() {
     console.log('📧 Running weekly email report...');
     
-    db.query('SELECT id, fullname, email FROM users', async (err, users) => {
-        if (err) {
-            console.log('Error fetching users:', err);
-            return;
-        }
+    try {
+        const usersResult = await queryDB('SELECT id, fullname, email FROM users', []);
+        const users = usersResult.rows;
         
         for (const user of users) {
-            const sql = `SELECT * FROM fingerprint_scans WHERE user_id = ? AND scanned_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY scanned_at DESC`;
+            let sql;
+            let params;
             
-            db.query(sql, [user.id], async (err, scans) => {
-                if (err || scans.length === 0) {
+            if (isPostgres) {
+                sql = `SELECT * FROM fingerprint_scans WHERE user_id = $1 AND scanned_at >= NOW() - INTERVAL '7 days' ORDER BY scanned_at DESC`;
+                params = [user.id];
+            } else {
+                sql = `SELECT * FROM fingerprint_scans WHERE user_id = ? AND scanned_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY scanned_at DESC`;
+                params = [user.id];
+            }
+            
+            try {
+                const scansResult = await queryDB(sql, params);
+                const scans = scansResult.rows;
+                
+                if (scans.length === 0) {
                     console.log(`No scans for ${user.email}, skipping...`);
-                    return;
+                    continue;
                 }
                 
                 const emailData = await generateWeeklyReport(user.id, user.email, user.fullname, scans);
@@ -291,9 +342,13 @@ async function sendWeeklyReports() {
                         }
                     });
                 }
-            });
+            } catch (err) {
+                console.log(`Error fetching scans for ${user.email}:`, err);
+            }
         }
-    });
+    } catch (err) {
+        console.log('Error fetching users:', err);
+    }
 }
 
 cron.schedule('0 8 * * 0', () => {
@@ -342,24 +397,23 @@ app.get('/echo-alter', (req, res) => {
 });
 
 // ============= API: REGISTER =============
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { fullname, email, password, behavior_data } = req.body;
     
-    const sql = `INSERT INTO users (fullname, email, password_hash, fingerprint_template) 
-                 VALUES (?, ?, ?, ?)`;
-    
-    db.query(sql, [fullname, email, password, JSON.stringify(behavior_data)], (err, result) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false, message: 'Registration failed' });
-        } else {
-            res.json({ success: true, message: 'User registered', userId: result.insertId });
-        }
-    });
+    try {
+        const sql = `INSERT INTO users (fullname, email, password_hash, fingerprint_template) 
+                     VALUES (?, ?, ?, ?)`;
+        const result = await queryDB(sql, [fullname, email, password, JSON.stringify(behavior_data)]);
+        
+        res.json({ success: true, message: 'User registered', userId: result.insertId });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Registration failed' });
+    }
 });
 
 // ============= API: CHECK IDENTITY =============
-app.post('/api/check-identity', (req, res) => {
+app.post('/api/check-identity', async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -369,43 +423,44 @@ app.post('/api/check-identity', (req, res) => {
         });
     }
     
-    const sql = 'SELECT id, fullname, email FROM users WHERE email = ? AND password_hash = ?';
-    
-    db.query(sql, [email, password], (err, results) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({
-                success: false,
-                message: 'Database error'
-            });
-        }
+    try {
+        const sql = 'SELECT id, fullname, email FROM users WHERE email = ? AND password_hash = ?';
+        const result = await queryDB(sql, [email, password]);
         
-        if (results.length === 0) {
+        if (result.rows.length === 0) {
             return res.json({
                 success: false,
                 message: 'Invalid email or password'
             });
         }
         
-        const user = results[0];
+        const user = result.rows[0];
         res.json({
             success: true,
             message: 'Identity verified',
             user: { id: user.id, name: user.fullname, email: user.email }
         });
-    });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: 'Database error'
+        });
+    }
 });
 
 // ============= API: LOGIN =============
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, behavior_data } = req.body;
     
-    db.query('SELECT * FROM users WHERE email = ?', [email], (err, users) => {
-        if (err || users.length === 0) {
+    try {
+        const userResult = await queryDB('SELECT * FROM users WHERE email = ?', [email]);
+        
+        if (userResult.rows.length === 0) {
             return res.status(401).json({ success: false, message: 'User not found' });
         }
         
-        const user = users[0];
+        const user = userResult.rows[0];
         const analysis = analyzeBehavior(behavior_data);
         
         const logSql = `INSERT INTO fingerprint_scans 
@@ -413,7 +468,7 @@ app.post('/api/login', (req, res) => {
                          interaction_speed, emotion_estimate, risk_level, is_successful)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
         
-        db.query(logSql, [
+        await queryDB(logSql, [
             user.id,
             behavior_data.duration,
             behavior_data.pressure,
@@ -427,7 +482,7 @@ app.post('/api/login', (req, res) => {
         if (analysis.risk === 'High') {
             const alertSql = `INSERT INTO security_alerts (user_id, alert_type, description) 
                               VALUES (?, ?, ?)`;
-            db.query(alertSql, [
+            await queryDB(alertSql, [
                 user.id,
                 'Suspicious Behavior',
                 `High risk detected: ${analysis.emotion} with ${behavior_data.retry} retries`
@@ -439,27 +494,29 @@ app.post('/api/login', (req, res) => {
             user: { id: user.id, name: user.fullname, email: user.email },
             analysis: analysis
         });
-    });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Login failed' });
+    }
 });
 
 // ============= API: GET USER SCAN HISTORY =============
-app.get('/api/user/:userId/scans', (req, res) => {
+app.get('/api/user/:userId/scans', async (req, res) => {
     const userId = req.params.userId;
     
-    const sql = `SELECT * FROM fingerprint_scans WHERE user_id = ? ORDER BY scanned_at DESC LIMIT 50`;
-    
-    db.query(sql, [userId], (err, results) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false, message: 'Failed to fetch scans' });
-        } else {
-            res.json({ success: true, scans: results });
-        }
-    });
+    try {
+        const sql = `SELECT * FROM fingerprint_scans WHERE user_id = ? ORDER BY scanned_at DESC LIMIT 50`;
+        const result = await queryDB(sql, [userId]);
+        
+        res.json({ success: true, scans: result.rows });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Failed to fetch scans' });
+    }
 });
 
 // ============= API: GET ALL ALERTS =============
-app.get('/api/alerts', (req, res) => {
+app.get('/api/alerts', async (req, res) => {
     const { status, search } = req.query;
     
     let sql = `SELECT sa.*, u.fullname, u.email 
@@ -482,64 +539,60 @@ app.get('/api/alerts', (req, res) => {
     
     sql += ` ORDER BY sa.created_at DESC`;
     
-    db.query(sql, params, (err, results) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false, message: 'Failed to fetch alerts' });
-        } else {
-            res.json({ success: true, alerts: results });
-        }
-    });
+    try {
+        const result = await queryDB(sql, params);
+        res.json({ success: true, alerts: result.rows });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Failed to fetch alerts' });
+    }
 });
 
 // ============= API: GET ALERTS FOR SPECIFIC USER =============
-app.get('/api/alerts/user/:userId', (req, res) => {
+app.get('/api/alerts/user/:userId', async (req, res) => {
     const userId = req.params.userId;
     
-    const sql = `SELECT * FROM security_alerts WHERE user_id = ? ORDER BY created_at DESC`;
-    
-    db.query(sql, [userId], (err, results) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false, message: 'Failed to fetch alerts' });
-        } else {
-            res.json({ success: true, alerts: results });
-        }
-    });
+    try {
+        const sql = `SELECT * FROM security_alerts WHERE user_id = ? ORDER BY created_at DESC`;
+        const result = await queryDB(sql, [userId]);
+        
+        res.json({ success: true, alerts: result.rows });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Failed to fetch alerts' });
+    }
 });
 
 // ============= API: RESOLVE ALERT =============
-app.put('/api/alerts/:id/resolve', (req, res) => {
+app.put('/api/alerts/:id/resolve', async (req, res) => {
     const alertId = req.params.id;
     
-    const sql = `UPDATE security_alerts SET is_resolved = TRUE WHERE id = ?`;
-    
-    db.query(sql, [alertId], (err, result) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false, message: 'Failed to resolve alert' });
-        } else {
-            res.json({ success: true, message: 'Alert resolved' });
-        }
-    });
+    try {
+        const sql = `UPDATE security_alerts SET is_resolved = TRUE WHERE id = ?`;
+        await queryDB(sql, [alertId]);
+        
+        res.json({ success: true, message: 'Alert resolved' });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false, message: 'Failed to resolve alert' });
+    }
 });
 
 // ============= API: ALERT STATISTICS =============
-app.get('/api/alerts/stats', (req, res) => {
-    const sql = `SELECT 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN is_resolved = FALSE THEN 1 ELSE 0 END) as unresolved,
-                    SUM(CASE WHEN is_resolved = TRUE THEN 1 ELSE 0 END) as resolved
-                 FROM security_alerts`;
-    
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({ success: false });
-        } else {
-            res.json({ success: true, stats: results[0] });
-        }
-    });
+app.get('/api/alerts/stats', async (req, res) => {
+    try {
+        const sql = `SELECT 
+                        COUNT(*) as total,
+                        SUM(CASE WHEN is_resolved = FALSE THEN 1 ELSE 0 END) as unresolved,
+                        SUM(CASE WHEN is_resolved = TRUE THEN 1 ELSE 0 END) as resolved
+                     FROM security_alerts`;
+        
+        const result = await queryDB(sql, []);
+        res.json({ success: true, stats: result.rows[0] });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ success: false });
+    }
 });
 
 // ============= BEHAVIOR ANALYSIS LOGIC =============
@@ -573,49 +626,6 @@ function analyzeBehavior(data) {
     }
     
     return { emotion, risk };
-}
-
-// ============= GET SUGGESTION (POWER & FRIENDLY) =============
-function getSuggestion(emotion) {
-    const suggestions = {
-        'Stress': {
-            short: 'Take a deep breath. You\'ve got this.',
-            long: 'I can sense you\'re feeling stressed right now. That\'s okay. Take a moment to breathe deeply. You\'ve handled tough situations before, and you can handle this too.'
-        },
-        'Anxious': {
-            short: 'Pause. Breathe. You are safe.',
-            long: 'It seems like you\'re feeling a bit anxious. That\'s completely normal. Try to pause, take a slow breath, and remind yourself — you are safe and you are capable.'
-        },
-        'Frustrated': {
-            short: 'Step back. You can solve this.',
-            long: 'I notice some frustration in your energy. That\'s understandable. Step back for a moment, take three deep breaths, and remember — you don\'t have to solve everything all at once.'
-        },
-        'Tired / Low Energy': {
-            short: 'Rest. You deserve a break.',
-            long: 'You sound tired, and that\'s okay. Your body is asking for rest. Take a short break, drink some water, and give yourself permission to recharge.'
-        },
-        'Confident / Calm': {
-            short: 'You are in your zone. Keep going!',
-            long: 'You\'re in a great state right now — calm, confident, and focused. This is your moment. Use this energy to tackle whatever comes next.'
-        },
-        'Efficient': {
-            short: 'Flow state detected. Use it wisely.',
-            long: 'You\'re in flow mode — sharp, fast, and focused. This is your peak performance state. Make the most of it while it lasts.'
-        },
-        'Unsure': {
-            short: 'Slow down. Clarity will come.',
-            long: 'It feels like you\'re unsure about something right now. That\'s okay. You don\'t need all the answers today. Slow down, and trust yourself to figure it out.'
-        },
-        'Neutral': {
-            short: 'Balanced and steady. Keep it up.',
-            long: 'You seem balanced and steady today — not too high, not too low. That\'s a good place to be. Stay grounded and keep moving forward.'
-        }
-    };
-    
-    return suggestions[emotion] || {
-        short: 'You are doing great. Keep going.',
-        long: 'You\'re doing well. Stay mindful of your breathing and keep moving forward with confidence.'
-    };
 }
 
 // ============= START SERVER =============
