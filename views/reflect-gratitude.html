@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>NeuroPrint AI | Reflect & Gratitude</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
@@ -110,7 +110,21 @@
         </div>
     </div>
     
+    <!-- ===== NEW: DELETE CONFIRMATION POPUP ===== -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-icon">🗑️</div>
+            <h3>Are you sure?</h3>
+            <p>This entry will be permanently deleted. This action cannot be undone.</p>
+            <div class="delete-modal-buttons">
+                <button class="delete-cancel-btn" id="deleteCancelBtn">Cancel</button>
+                <button class="delete-confirm-btn" id="deleteConfirmBtn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+    
     <style>
+        /* ===== MAIN STYLES (sama macam asal) ===== */
         .rg-container {
             max-width: 1300px;
             margin: 0 auto;
@@ -179,7 +193,6 @@
         }
         .logout-btn:hover { background: rgba(255, 0, 64, 0.4); box-shadow: 0 0 15px rgba(255, 0, 64, 0.3); transform: scale(1.02); }
         
-        /* TOP ROW - KECIL & KEMAS */
         .top-row {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -197,13 +210,11 @@
             border: 1px solid rgba(0, 212, 255, 0.3);
             transition: all 0.3s ease;
         }
-        
         .streak-card:hover {
             transform: translateY(-3px);
             border-color: #00d4ff;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
         }
-        
         .streak-icon { font-size: 39px; }
         .streak-info { flex: 1; }
         .streak-label { font-size: 16px; color: #aaa; }
@@ -221,17 +232,14 @@
             border: 1px solid #2a2a2a;
             transition: all 0.3s ease;
         }
-        
         .quote-card:hover {
             transform: translateY(-3px);
             border-color: #00d4ff;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
         }
-        
         .quote-icon { font-size: 29px; }
         .quote-text { font-size: 17px; font-style: italic; color: #eee; font-family: 'Poppins', sans-serif; line-height: 1.4; }
         
-        /* MAIN ROW - 2 COLUMN */
         .main-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -246,27 +254,19 @@
             border: 1px solid rgba(0, 212, 255, 0.2);
             transition: all 0.3s ease;
         }
-        
         .form-card:hover, .history-card:hover {
             border-color: rgba(0, 212, 255, 0.5);
             transform: translateY(-3px);
             box-shadow: 0 0 25px rgba(0, 212, 255, 0.1);
         }
-        
         .form-card h2, .history-card h2 {
             color: #00d4ff;
             font-family: 'Orbitron', monospace;
             font-size: 20px;
             margin-bottom: 8px;
         }
+        .form-subtitle { color: #aaa; font-size: 13px; margin-bottom: 20px; }
         
-        .form-subtitle {
-            color: #aaa;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        
-        /* Mood Selector - HOVER SHOWS SUBTITLE */
         .mood-selector {
             display: flex;
             flex-wrap: wrap;
@@ -274,7 +274,6 @@
             gap: 15px;
             margin-bottom: 20px;
         }
-        
         .mood-option {
             display: flex;
             flex-direction: column;
@@ -288,7 +287,6 @@
             transition: all 0.2s;
             border: 2px solid transparent;
         }
-        
         .mood-option span {
             font-size: 11px;
             color: #888;
@@ -297,21 +295,9 @@
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
         }
-        
-        .mood-option:hover {
-            transform: scale(1.08);
-            background: rgba(0, 212, 255, 0.2);
-        }
-        
-        .mood-option:hover span {
-            opacity: 1;
-        }
-        
-        .mood-option.selected {
-            border-color: #00d4ff;
-            background: rgba(0, 212, 255, 0.3);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-        }
+        .mood-option:hover { transform: scale(1.08); background: rgba(0, 212, 255, 0.2); }
+        .mood-option:hover span { opacity: 1; }
+        .mood-option.selected { border-color: #00d4ff; background: rgba(0, 212, 255, 0.3); box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
         
         .selected-mood-display {
             text-align: center;
@@ -323,17 +309,8 @@
             font-size: 13px;
         }
         
-        .input-group-full {
-            margin-bottom: 20px;
-        }
-        
-        .input-group-full label {
-            display: block;
-            color: #00ff88;
-            font-size: 12px;
-            margin-bottom: 6px;
-        }
-        
+        .input-group-full { margin-bottom: 20px; }
+        .input-group-full label { display: block; color: #00ff88; font-size: 12px; margin-bottom: 6px; }
         .input-group-full textarea {
             width: 100%;
             min-height: 100px;
@@ -346,19 +323,9 @@
             font-size: 13px;
             resize: vertical;
         }
+        .input-group-full textarea:focus { outline: none; border-color: #00d4ff; }
         
-        .input-group-full textarea:focus {
-            outline: none;
-            border-color: #00d4ff;
-        }
-        
-        .gratitude-section label {
-            display: block;
-            color: #ffaa00;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        
+        .gratitude-section label { display: block; color: #ffaa00; font-size: 12px; margin-bottom: 10px; }
         .gratitude-input {
             width: 100%;
             background: rgba(0, 0, 0, 0.4);
@@ -369,11 +336,7 @@
             margin-bottom: 8px;
             font-size: 13px;
         }
-        
-        .gratitude-input:focus {
-            outline: none;
-            border-color: #ffaa00;
-        }
+        .gratitude-input:focus { outline: none; border-color: #ffaa00; }
         
         .save-entry-btn {
             width: 100%;
@@ -387,14 +350,8 @@
             margin-top: 15px;
             transition: all 0.3s;
         }
+        .save-entry-btn:hover { background: linear-gradient(135deg, #00d4ff40, #00ff8840); transform: scale(1.02); box-shadow: 0 0 15px rgba(0, 212, 255, 0.3); }
         
-        .save-entry-btn:hover {
-            background: linear-gradient(135deg, #00d4ff40, #00ff8840);
-            transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-        }
-        
-        /* History */
         .history-header {
             display: flex;
             justify-content: space-between;
@@ -403,7 +360,6 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        
         .clear-history-btn {
             background: rgba(255, 0, 64, 0.15);
             border: 1px solid #ff0040;
@@ -414,17 +370,9 @@
             font-size: 11px;
             transition: all 0.3s;
         }
+        .clear-history-btn:hover { background: rgba(255, 0, 64, 0.3); transform: scale(1.02); }
         
-        .clear-history-btn:hover {
-            background: rgba(255, 0, 64, 0.3);
-            transform: scale(1.02);
-        }
-        
-        .history-list {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
+        .history-list { max-height: 500px; overflow-y: auto; }
         .history-item {
             background: rgba(0, 212, 255, 0.05);
             border-radius: 18px;
@@ -432,12 +380,7 @@
             margin-bottom: 12px;
             transition: all 0.2s;
         }
-        
-        .history-item:hover {
-            background: rgba(0, 212, 255, 0.12);
-            transform: translateX(4px);
-        }
-        
+        .history-item:hover { background: rgba(0, 212, 255, 0.12); transform: translateX(4px); }
         .history-date {
             color: #00d4ff;
             font-size: 11px;
@@ -446,48 +389,23 @@
             justify-content: space-between;
             align-items: center;
         }
-        
-        .history-mood {
-            font-size: 22px;
-            margin-right: 8px;
-        }
-        
-        .history-reflection {
-            color: #ccc;
-            font-size: 12px;
-            margin: 8px 0;
-            line-height: 1.5;
-        }
-        
-        .history-gratitude {
-            color: #ffaa00;
-            font-size: 11px;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
+        .history-mood { font-size: 22px; margin-right: 8px; }
+        .history-reflection { color: #ccc; font-size: 12px; margin: 8px 0; line-height: 1.5; }
+        .history-gratitude { color: #ffaa00; font-size: 11px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
         .delete-entry {
             background: none;
             border: none;
             color: #ff0040;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 16px;
             transition: all 0.2s;
+            padding: 4px 8px;
+            border-radius: 8px;
         }
+        .delete-entry:hover { background: rgba(255, 0, 64, 0.2); transform: scale(1.1); }
+        .empty-history { text-align: center; color: #888; padding: 30px; font-size: 13px; }
         
-        .delete-entry:hover {
-            transform: scale(1.1);
-        }
-        
-        .empty-history {
-            text-align: center;
-            color: #888;
-            padding: 30px;
-            font-size: 13px;
-        }
-        
-        /* Success Modal */
+        /* SUCCESS MODAL */
         .success-modal {
             display: none;
             position: fixed;
@@ -499,7 +417,6 @@
             background: rgba(0, 0, 0, 0.94);
             backdrop-filter: blur(16px);
         }
-        
         .success-modal-content {
             position: absolute;
             top: 50%;
@@ -516,18 +433,12 @@
             box-shadow: 0 0 60px rgba(0, 255, 136, 0.3);
             animation: modalPop 0.4s ease;
         }
-        
         @keyframes modalPop {
             from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
             to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
-        
         .success-icon { font-size: 60px; margin-bottom: 12px; animation: bounce 0.5s ease; }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-        
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
         .success-modal-content h3 { color: #00ff88; font-family: 'Orbitron', monospace; font-size: 24px; margin-bottom: 10px; }
         .success-modal-content p { color: #ccc; font-size: 14px; margin-bottom: 12px; }
         .modal-divider { width: 40px; height: 2px; background: linear-gradient(90deg, #00d4ff, #00ff88); margin: 12px auto; }
@@ -544,35 +455,150 @@
         }
         .modal-close-btn:hover { background: linear-gradient(135deg, #00d4ff40, #00ff8840); transform: scale(1.02); }
         
-        .footer-back {
+        /* ===== NEW: DELETE CONFIRMATION MODAL ===== */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.94);
+            backdrop-filter: blur(16px);
+        }
+        .delete-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(12, 12, 22, 0.98), rgba(8, 8, 16, 0.98));
+            backdrop-filter: blur(20px);
+            padding: 35px 30px;
+            border-radius: 50px;
+            width: 400px;
+            max-width: 92%;
             text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #ff0040;
+            box-shadow: 0 0 60px rgba(255, 0, 64, 0.3);
+            animation: modalPop 0.4s ease;
         }
-        
-        .back-to-dashboard {
-            display: inline-block;
-            color: #00d4ff;
-            text-decoration: none;
-            font-family: 'Space Grotesk', monospace;
-            font-size: 14px;
-            padding: 10px 24px;
-            border: 1px solid #00d4ff;
+        .delete-icon { font-size: 56px; margin-bottom: 12px; }
+        .delete-modal-content h3 { color: #ff0040; font-family: 'Orbitron', monospace; font-size: 22px; margin-bottom: 10px; }
+        .delete-modal-content p { color: #ccc; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+        .delete-modal-buttons {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+        .delete-cancel-btn {
+            padding: 10px 28px;
             border-radius: 40px;
-            transition: all 0.3s;
-            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
         }
-        
-        .back-to-dashboard:hover {
-            background: rgba(0, 212, 255, 0.2);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-            transform: translateY(-2px);
+        .delete-cancel-btn:hover { background: rgba(0, 212, 255, 0.3); transform: scale(1.02); }
+        .delete-confirm-btn {
+            padding: 10px 28px;
+            border-radius: 40px;
+            border: 1px solid #ff0040;
+            background: rgba(255, 0, 64, 0.2);
+            color: #ff0040;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
         }
+        .delete-confirm-btn:hover { background: rgba(255, 0, 64, 0.4); transform: scale(1.02); }
         
+        .footer-back { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .back-to-dashboard { display: inline-block; color: #00d4ff; text-decoration: none; font-family: 'Space Grotesk', monospace; font-size: 14px; padding: 10px 24px; border: 1px solid #00d4ff; border-radius: 40px; transition: all 0.3s; background: rgba(0,212,255,0.05); }
+        .back-to-dashboard:hover { background: rgba(0,212,255,0.2); box-shadow: 0 0 15px rgba(0,212,255,0.3); transform: translateY(-2px); }
+        
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .main-row { grid-template-columns: 1fr; }
             .top-row { grid-template-columns: 1fr; }
+            .rg-container { padding: 12px; }
+            .rg-header { flex-direction: column; gap: 10px; padding: 12px 15px; border-radius: 24px; }
+            .neon-text { font-size: 22px; }
+            .subtitle { font-size: 12px; }
+            .user-info { flex-wrap: wrap; justify-content: center; gap: 8px; }
+            .user-name { font-size: 14px; }
+            .logout-btn { font-size: 11px; padding: 4px 14px; }
+            .streak-card { padding: 12px 16px; }
+            .streak-value { font-size: 28px; }
+            .quote-text { font-size: 14px; }
+            .form-card, .history-card { padding: 16px; }
+            .form-card h2, .history-card h2 { font-size: 17px; }
+            .mood-option { font-size: 30px; padding: 6px 10px; }
+            .delete-modal-content { padding: 25px 20px; border-radius: 40px; width: 90%; }
+            .delete-modal-buttons { flex-direction: column; gap: 10px; }
+            .delete-cancel-btn, .delete-confirm-btn { width: 100%; }
+        }
+        
+        @media (max-width: 600px) {
+            .rg-container { padding: 8px; }
+            .rg-header { padding: 8px 10px; border-radius: 18px; gap: 6px; }
+            .neon-text { font-size: 16px; }
+            .subtitle { font-size: 9px; }
+            .live-text { font-size: 8px; }
+            .user-name { font-size: 10px; }
+            .logout-btn { font-size: 8px; padding: 2px 8px; }
+            .live-status { padding: 2px 6px; gap: 4px; }
+            .live-dot { width: 6px; height: 6px; }
+            
+            .top-row { gap: 10px; margin-bottom: 16px; }
+            .streak-card { padding: 8px 12px; gap: 10px; border-radius: 16px; }
+            .streak-icon { font-size: 28px; }
+            .streak-value { font-size: 22px; }
+            .streak-label { font-size: 12px; }
+            .streak-days { font-size: 10px; }
+            .quote-card { padding: 10px 12px; gap: 8px; border-radius: 16px; }
+            .quote-icon { font-size: 22px; }
+            .quote-text { font-size: 11px; }
+            
+            .form-card, .history-card { padding: 12px; border-radius: 20px; }
+            .form-card h2, .history-card h2 { font-size: 14px; margin-bottom: 4px; }
+            .form-subtitle { font-size: 10px; margin-bottom: 12px; }
+            .mood-selector { gap: 8px; margin-bottom: 12px; }
+            .mood-option { font-size: 24px; padding: 4px 6px; border-radius: 14px; }
+            .mood-option span { font-size: 8px; }
+            .selected-mood-display { font-size: 11px; padding: 4px; margin-bottom: 12px; border-radius: 12px; }
+            .input-group-full label { font-size: 10px; margin-bottom: 4px; }
+            .input-group-full textarea { min-height: 70px; font-size: 11px; padding: 8px; }
+            .gratitude-section label { font-size: 10px; margin-bottom: 6px; }
+            .gratitude-input { font-size: 11px; padding: 6px 10px; margin-bottom: 4px; }
+            .save-entry-btn { font-size: 12px; padding: 8px; margin-top: 10px; }
+            
+            .history-header h2 { font-size: 14px; }
+            .clear-history-btn { font-size: 9px; padding: 3px 10px; }
+            .history-item { padding: 10px; border-radius: 14px; margin-bottom: 8px; }
+            .history-date { font-size: 9px; }
+            .history-mood { font-size: 18px; }
+            .history-reflection { font-size: 10px; }
+            .history-gratitude { font-size: 9px; }
+            .delete-entry { font-size: 14px; padding: 2px 6px; }
+            .empty-history { font-size: 11px; padding: 20px; }
+            
+            .footer-back { margin-top: 16px; padding-top: 12px; }
+            .back-to-dashboard { font-size: 10px; padding: 6px 14px; }
+            
+            .success-modal-content { padding: 20px 16px; border-radius: 30px; width: 90%; }
+            .success-modal-content h3 { font-size: 18px; }
+            .success-modal-content p { font-size: 12px; }
+            .modal-close-btn { font-size: 12px; padding: 6px 16px; }
+            
+            .delete-modal-content { padding: 20px 16px; border-radius: 30px; }
+            .delete-icon { font-size: 40px; }
+            .delete-modal-content h3 { font-size: 18px; }
+            .delete-modal-content p { font-size: 12px; margin-bottom: 16px; }
+            .delete-cancel-btn, .delete-confirm-btn { font-size: 12px; padding: 8px 16px; }
         }
     </style>
     
@@ -580,8 +606,8 @@
         let currentUser = null;
         let selectedMood = null;
         let selectedMoodName = null;
+        let deleteTargetIndex = null; // untuk tracking entry yang nak delete
         
-        // Quotes Collection
         const quotes = [
             "Gratitude turns what we have into enough.",
             "The more you practice gratitude, the more you see reasons to be grateful.",
@@ -627,15 +653,8 @@
             modal.style.display = 'block';
             
             const closeBtn = document.getElementById('modalCloseBtn');
-            closeBtn.onclick = () => {
-                modal.style.display = 'none';
-            };
-            
-            window.onclick = (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-            };
+            closeBtn.onclick = () => { modal.style.display = 'none'; };
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
         }
         
         function saveEntry() {
@@ -668,7 +687,6 @@
             entries.unshift(entry);
             localStorage.setItem(`journal_${currentUser.id}`, JSON.stringify(entries.slice(0, 50)));
             
-            // Reset form
             document.getElementById('reflectionInput').value = '';
             document.getElementById('gratitude1').value = '';
             document.getElementById('gratitude2').value = '';
@@ -677,6 +695,34 @@
             showSuccessModal();
             loadHistory();
             calculateStreak();
+        }
+        
+        // ===== FUNCTION UNTUK SHOW DELETE POPUP =====
+        function showDeletePopup(index) {
+            deleteTargetIndex = index;
+            const modal = document.getElementById('deleteModal');
+            modal.style.display = 'block';
+        }
+        
+        // ===== FUNCTION UNTUK CONFIRM DELETE =====
+        function confirmDelete() {
+            if (deleteTargetIndex === null) return;
+            
+            const entries = JSON.parse(localStorage.getItem(`journal_${currentUser.id}`) || '[]');
+            entries.splice(deleteTargetIndex, 1);
+            localStorage.setItem(`journal_${currentUser.id}`, JSON.stringify(entries));
+            
+            deleteTargetIndex = null;
+            document.getElementById('deleteModal').style.display = 'none';
+            
+            loadHistory();
+            calculateStreak();
+        }
+        
+        // ===== FUNCTION UNTUK CANCEL DELETE =====
+        function cancelDelete() {
+            deleteTargetIndex = null;
+            document.getElementById('deleteModal').style.display = 'none';
         }
         
         function loadHistory() {
@@ -707,15 +753,29 @@
                 container.appendChild(entryDiv);
             });
             
+            // ===== ATTACH EVENT LISTENER UNTUK DELETE BUTTON =====
             document.querySelectorAll('.delete-entry').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const index = parseInt(btn.dataset.index);
-                    const entriesList = JSON.parse(localStorage.getItem(`journal_${currentUser.id}`) || '[]');
-                    entriesList.splice(index, 1);
-                    localStorage.setItem(`journal_${currentUser.id}`, JSON.stringify(entriesList));
-                    loadHistory();
-                    calculateStreak();
+                    showDeletePopup(index);
                 });
+            });
+        }
+        
+        // ===== SETUP DELETE MODAL BUTTONS =====
+        function setupDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            const cancelBtn = document.getElementById('deleteCancelBtn');
+            const confirmBtn = document.getElementById('deleteConfirmBtn');
+            
+            cancelBtn.addEventListener('click', cancelDelete);
+            confirmBtn.addEventListener('click', confirmDelete);
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    cancelDelete();
+                }
             });
         }
         
@@ -763,6 +823,7 @@
         
         function init() {
             setupMoodSelector();
+            setupDeleteModal();
             document.getElementById('saveEntryBtn').addEventListener('click', saveEntry);
             document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
         }

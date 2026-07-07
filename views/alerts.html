@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>NeuroPrint AI | Personal Security Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
@@ -787,13 +787,100 @@
             box-shadow: 0 0 18px rgba(0, 212, 255, 0.4);
         }
         
-        @media (max-width: 600px) {
-            .stats-mood-row { grid-template-columns: 1fr; }
-            .stats-two { grid-template-columns: repeat(2, 1fr); }
-            .modal-content.breath-modal { padding: 25px 20px 30px; }
-            .breath-steps { gap: 4px; }
+        /* ============================================================
+           ALERTS — RESPONSIVE FIX (UPDATED)
+           ============================================================ */
+        
+        @media (max-width: 1024px) {
+            .hub-container { padding: 12px; }
+            .hub-header { flex-direction: column; gap: 10px; padding: 12px 15px; border-radius: 24px; }
+            .logo-section { gap: 15px; }
+            .neon-text { font-size: 24px; }
+            .subtitle { font-size: 12px; }
+            .user-info { flex-wrap: wrap; justify-content: center; gap: 8px; }
+            .user-name { font-size: 14px; }
+            .logout-btn { font-size: 11px; padding: 4px 14px; }
+            .stats-mood-row { grid-template-columns: 1fr; gap: 16px; }
+            .stats-two { gap: 12px; }
+            .stat-card-hover { padding: 16px 12px; border-radius: 20px; }
+            .stat-icon { font-size: 30px; }
+            .stat-value { font-size: 28px; }
+            .stat-label { font-size: 10px; }
+            .mood-ring-card { padding: 16px; }
+            .card-label { font-size: 14px; }
+            .ring-value { font-size: 20px; }
+            .chart-card-large { padding: 16px; }
+            .chart-card-large h3 { font-size: 14px; }
+            .wellness-tip-card { padding: 16px 20px; }
+            .tip-message { font-size: 13px; }
+            .breath-btn { padding: 12px 24px; font-size: 14px; }
+            .modal-content.breath-modal { width: 90%; padding: 20px; border-radius: 40px; }
+            .breath-steps { gap: 4px; padding: 8px 10px; }
             .breath-step-line { width: 15px; }
             .step-icon { font-size: 18px; }
+        }
+        
+        @media (max-width: 600px) {
+            .hub-container { padding: 8px; }
+            .hub-header { padding: 8px 10px; border-radius: 18px; gap: 6px; }
+            .neon-text { font-size: 18px; letter-spacing: 1px; }
+            .subtitle { font-size: 9px; }
+            .live-text { font-size: 9px; }
+            .user-name { font-size: 11px; }
+            .logout-btn { font-size: 9px; padding: 2px 8px; }
+            .live-status { padding: 2px 6px; gap: 4px; }
+            .live-dot { width: 6px; height: 6px; }
+            
+            .welcome-section { padding: 12px 14px; gap: 10px; border-radius: 20px; margin-bottom: 16px; }
+            .welcome-icon { font-size: 30px; }
+            .welcome-greeting { font-size: 13px; }
+            .welcome-name { font-size: 18px; }
+            
+            .stats-mood-row { gap: 10px; margin-bottom: 16px; }
+            .stats-two { gap: 8px; }
+            .stat-card-hover { padding: 10px 6px; border-radius: 16px; }
+            .stat-icon { font-size: 22px; margin-bottom: 4px; }
+            .stat-value { font-size: 20px; }
+            .stat-label { font-size: 7px; letter-spacing: 0.5px; margin-top: 4px; }
+            .stat-progress-bar { margin-top: 8px; height: 3px; }
+            
+            .mood-ring-card { padding: 12px; border-radius: 20px; }
+            .card-label { font-size: 11px; margin-bottom: 8px; }
+            .ring-value { font-size: 16px; }
+            .ring-status { font-size: 10px; margin-top: 8px; }
+            
+            .chart-card-large { padding: 10px; border-radius: 20px; margin-bottom: 16px; }
+            .chart-card-large h3 { font-size: 11px; margin-bottom: 12px; }
+            
+            .wellness-tip-card { padding: 12px 14px; border-radius: 20px; margin-bottom: 20px; }
+            .tip-icon { font-size: 10px; }
+            .tip-message { font-size: 11px; }
+            
+            .breath-section-centered { margin-bottom: 20px; }
+            .breath-btn { font-size: 11px; padding: 10px 16px; border-radius: 40px; }
+            
+            .footer-back { margin-top: 16px; padding-top: 12px; }
+            .back-to-dashboard { font-size: 11px; padding: 6px 14px; }
+            
+            /* Modal */
+            .modal-content.breath-modal { padding: 16px; border-radius: 30px; margin: 10% auto; }
+            .breath-header h3 { font-size: 18px; }
+            .breath-subtitle { font-size: 10px; }
+            .breath-circle-container { width: 160px; height: 160px; }
+            .breath-inner-circle { width: 120px; height: 120px; }
+            .breath-phase-text { font-size: 11px; }
+            .breath-countdown { font-size: 30px; }
+            .breath-steps { gap: 2px; padding: 6px 8px; border-radius: 40px; flex-wrap: nowrap; }
+            .breath-step-item { padding: 4px 6px; }
+            .step-icon { font-size: 14px; }
+            .step-name { font-size: 7px; }
+            .step-duration { font-size: 8px; }
+            .breath-step-line { width: 8px; }
+            .breath-footer { padding: 8px 12px; border-radius: 30px; }
+            .breath-total-timer { font-size: 16px; }
+            .breath-cycle-count { font-size: 9px; }
+            .breath-close-btn { font-size: 11px; padding: 8px 16px; }
+            .modal-close { font-size: 18px; width: 24px; height: 24px; }
         }
     </style>
     

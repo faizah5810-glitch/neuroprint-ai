@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>NeuroPrint AI | Wellness Library</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Rajdhani:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
@@ -519,16 +519,130 @@
         .back-to-dashboard { display: inline-block; color: #00d4ff; text-decoration: none; font-family: 'Space Grotesk', monospace; font-size: 14px; padding: 10px 24px; border: 1px solid #00d4ff; border-radius: 40px; transition: all 0.3s; background: rgba(0,212,255,0.05); }
         .back-to-dashboard:hover { background: rgba(0,212,255,0.2); box-shadow: 0 0 15px rgba(0,212,255,0.3); transform: translateY(-2px); }
         
-        @media (max-width: 800px) {
-            .emotion-row { gap: 15px; }
-            .emotion-row-center { gap: 15px; }
-            .emotion-card { min-width: 140px; }
+        /* ============================================================
+           WELLNESS — RESPONSIVE FIX (UPDATED)
+           ============================================================ */
+        
+        @media (max-width: 1024px) {
+            .wellness-container { padding: 12px; }
+            .wellness-header { flex-direction: column; gap: 10px; padding: 12px 15px; border-radius: 24px; }
+            .neon-text { font-size: 22px; }
+            .subtitle { font-size: 14px; }
+            .user-info { flex-wrap: wrap; justify-content: center; gap: 8px; }
+            .user-name { font-size: 14px; }
+            .logout-btn { font-size: 11px; padding: 4px 14px; }
+            
+            .emotion-card { min-width: 130px; padding: 14px 8px; border-radius: 20px; }
+            .emotion-icon { font-size: 34px; }
+            .emotion-name { font-size: 13px; }
+            .emotion-desc { font-size: 9px; }
+            .emotion-row { gap: 12px; }
+            .emotion-row-center { gap: 12px; }
+            
+            .section-title h2 { font-size: 18px; }
+            .subtitle-center { font-size: 11px; }
+            
+            .game-container-brain, .game-container { padding: 16px; border-radius: 24px; }
+            .game-controls-brain, .game-controls { gap: 10px; }
+            .stats-brain { gap: 10px; }
+            .stat-brain { padding: 6px 12px; }
+            .stat-brain-value { font-size: 15px; }
+            .current-word-brain { font-size: 30px; }
+            .typing-input-brain { font-size: 15px; padding: 10px 14px; }
+            .stats-grid-brain { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-value-brain { font-size: 22px; }
+            
             .game-board.easy, .game-board.medium, .game-board.hard { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-            .card { font-size: 11px; min-width: 70px; }
-            .stats-grid-brain { grid-template-columns: repeat(2, 1fr); }
-            .modal-quotes-content { width: 95%; padding: 25px; }
+            .card { min-width: 60px; font-size: 11px; padding: 6px; }
+            
+            .tips-panel { border-radius: 20px; margin-bottom: 24px; }
+            .tips-header { padding: 14px 18px; }
+            .tips-header h3 { font-size: 15px; }
+            .tips-content { padding: 16px; }
+            .tip-item { padding: 12px; }
+            .tip-text { font-size: 12px; }
+            
+            .modal-quotes-content { width: 95%; padding: 20px; border-radius: 40px; }
             .wisdom-card { width: 70px; height: 90px; font-size: 28px; }
-            .modal-result-content { width: 90%; padding: 25px; }
+            .quote-display p { font-size: 15px; }
+            .modal-result-content { width: 90%; padding: 20px; }
+            .modal-result-content h3 { font-size: 22px; }
+        }
+        
+        @media (max-width: 600px) {
+            .wellness-container { padding: 8px; }
+            .wellness-header { padding: 8px 10px; border-radius: 18px; gap: 6px; }
+            .neon-text { font-size: 16px; }
+            .subtitle { font-size: 10px; }
+            .live-text { font-size: 8px; }
+            .user-name { font-size: 11px; }
+            .logout-btn { font-size: 9px; padding: 2px 8px; }
+            .live-status { padding: 2px 6px; gap: 4px; }
+            .live-dot { width: 6px; height: 6px; }
+            
+            .emotion-card { min-width: 80px; padding: 10px 4px; border-radius: 16px; }
+            .emotion-icon { font-size: 26px; margin-bottom: 4px; }
+            .emotion-name { font-size: 10px; margin-bottom: 2px; }
+            .emotion-desc { font-size: 7px; }
+            .emotion-row { gap: 6px; margin-bottom: 12px; }
+            .emotion-row-center { gap: 6px; margin-bottom: 20px; }
+            
+            .section-title { margin-bottom: 16px; }
+            .section-title h2 { font-size: 14px; margin-bottom: 4px; }
+            .subtitle-center { font-size: 9px; }
+            
+            .game-container-brain, .game-container { padding: 10px; border-radius: 18px; margin-bottom: 20px; }
+            .game-controls-brain, .game-controls { flex-direction: column; align-items: stretch; gap: 6px; }
+            .level-buttons-brain, .level-buttons { justify-content: center; }
+            .level-btn-brain, .level-btn { font-size: 9px; padding: 4px 10px; }
+            .stats-brain { justify-content: center; }
+            .stat-brain { padding: 4px 8px; }
+            .stat-brain-label { font-size: 8px; }
+            .stat-brain-value { font-size: 13px; }
+            .current-word-brain { font-size: 22px; letter-spacing: 2px; }
+            .typing-input-brain { font-size: 13px; padding: 8px 10px; }
+            .stats-grid-brain { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .stat-box-brain { padding: 8px; border-radius: 14px; }
+            .stat-label-brain { font-size: 8px; margin-bottom: 4px; }
+            .stat-value-brain { font-size: 18px; }
+            .game-status-brain { font-size: 10px; }
+            .btn-brain { font-size: 10px; padding: 6px 14px; }
+            .game-buttons-brain { gap: 8px; flex-wrap: wrap; }
+            
+            .game-board.easy, .game-board.medium, .game-board.hard { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+            .card { min-width: 50px; font-size: 9px; padding: 4px; border-radius: 10px; }
+            .game-stats { gap: 10px; }
+            .moves-count, .time-count { font-size: 11px; }
+            .reset-game-btn { font-size: 9px; padding: 4px 10px; }
+            .game-message { font-size: 14px; }
+            
+            .tips-panel { border-radius: 16px; margin-bottom: 16px; }
+            .tips-header { padding: 10px 12px; flex-wrap: wrap; gap: 6px; }
+            .tips-emotion-icon { font-size: 24px; }
+            .tips-header h3 { font-size: 12px; margin-left: 8px; }
+            .close-tips { font-size: 18px; }
+            .tips-content { padding: 10px; }
+            .tip-item { padding: 8px; border-radius: 14px; margin-bottom: 6px; }
+            .tip-title { font-size: 11px; margin-bottom: 4px; }
+            .tip-text { font-size: 10px; }
+            
+            .footer-back { margin-top: 16px; padding-top: 12px; }
+            .back-to-dashboard { font-size: 11px; padding: 6px 14px; }
+            
+            .modal-quotes-content { padding: 16px; border-radius: 30px; }
+            .modal-quotes-content h3 { font-size: 18px; }
+            .modal-quotes-content p { font-size: 12px; margin-bottom: 16px; }
+            .wisdom-card { width: 55px; height: 70px; font-size: 20px; border-radius: 12px; }
+            .card-deck { gap: 12px; }
+            .quote-display { padding: 14px; }
+            .quote-display p { font-size: 13px; }
+            .quote-display small { font-size: 11px; }
+            
+            .modal-result-content { padding: 16px; border-radius: 30px; }
+            .modal-result-content h3 { font-size: 18px; }
+            .result-stats { padding: 10px; }
+            .result-row { font-size: 12px; padding: 4px 0; }
+            .close-result-btn { font-size: 12px; padding: 6px 16px; }
         }
     </style>
 </head>
