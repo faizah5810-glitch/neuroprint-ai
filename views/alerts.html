@@ -821,66 +821,97 @@
         }
         
         @media (max-width: 600px) {
-            .hub-container { padding: 8px; }
-            .hub-header { padding: 8px 10px; border-radius: 18px; gap: 6px; }
-            .neon-text { font-size: 18px; letter-spacing: 1px; }
-            .subtitle { font-size: 9px; }
-            .live-text { font-size: 9px; }
-            .user-name { font-size: 11px; }
-            .logout-btn { font-size: 9px; padding: 2px 8px; }
-            .live-status { padding: 2px 6px; gap: 4px; }
-            .live-dot { width: 6px; height: 6px; }
+            .hub-container {
+                padding: 4px !important;
+                overflow-x: hidden !important;
+                width: 100% !important;
+                max-width: 100vw !important;
+            }
+            .hub-header {
+                padding: 4px 6px !important;
+                border-radius: 12px !important;
+                gap: 4px !important;
+                flex-direction: column !important;
+            }
+            .logo-section { gap: 4px !important; }
+            .neon-text { font-size: 13px !important; letter-spacing: 1px !important; }
+            .subtitle { font-size: 6px !important; }
+            .live-text { font-size: 6px !important; }
+            .user-name { font-size: 8px !important; }
+            .logout-btn { font-size: 6px !important; padding: 1px 6px !important; border-radius: 16px !important; }
+            .live-status { padding: 1px 4px !important; gap: 2px !important; }
+            .live-dot { width: 4px !important; height: 4px !important; }
             
-            .welcome-section { padding: 12px 14px; gap: 10px; border-radius: 20px; margin-bottom: 16px; }
-            .welcome-icon { font-size: 30px; }
-            .welcome-greeting { font-size: 13px; }
-            .welcome-name { font-size: 18px; }
+            .welcome-section {
+                padding: 6px 8px !important;
+                gap: 6px !important;
+                border-radius: 14px !important;
+                margin-bottom: 10px !important;
+            }
+            .welcome-icon { font-size: 20px !important; }
+            .welcome-greeting { font-size: 9px !important; }
+            .welcome-name { font-size: 13px !important; }
             
-            .stats-mood-row { gap: 10px; margin-bottom: 16px; }
-            .stats-two { gap: 8px; }
-            .stat-card-hover { padding: 10px 6px; border-radius: 16px; }
-            .stat-icon { font-size: 22px; margin-bottom: 4px; }
-            .stat-value { font-size: 20px; }
-            .stat-label { font-size: 7px; letter-spacing: 0.5px; margin-top: 4px; }
-            .stat-progress-bar { margin-top: 8px; height: 3px; }
+            .stats-mood-row { gap: 6px !important; margin-bottom: 10px !important; }
+            .stats-two { gap: 4px !important; }
+            .stat-card-hover {
+                padding: 4px 2px !important;
+                border-radius: 10px !important;
+                min-height: 50px !important;
+            }
+            .stat-icon { font-size: 16px !important; margin-bottom: 0px !important; }
+            .stat-value { font-size: 14px !important; }
+            .stat-label { font-size: 5px !important; letter-spacing: 0px !important; margin-top: 2px !important; }
+            .stat-progress-bar { margin-top: 4px !important; height: 2px !important; }
             
-            .mood-ring-card { padding: 12px; border-radius: 20px; }
-            .card-label { font-size: 11px; margin-bottom: 8px; }
-            .ring-value { font-size: 16px; }
-            .ring-status { font-size: 10px; margin-top: 8px; }
+            .mood-ring-card {
+                padding: 8px 4px !important;
+                border-radius: 14px !important;
+            }
+            .card-label { font-size: 8px !important; margin-bottom: 6px !important; }
+            .ring-value { font-size: 13px !important; }
+            .ring-status { font-size: 7px !important; margin-top: 4px !important; }
             
-            .chart-card-large { padding: 10px; border-radius: 20px; margin-bottom: 16px; }
-            .chart-card-large h3 { font-size: 11px; margin-bottom: 12px; }
+            .chart-card-large {
+                padding: 6px !important;
+                border-radius: 14px !important;
+                margin-bottom: 10px !important;
+            }
+            .chart-card-large h3 { font-size: 8px !important; margin-bottom: 6px !important; }
             
-            .wellness-tip-card { padding: 12px 14px; border-radius: 20px; margin-bottom: 20px; }
-            .tip-icon { font-size: 10px; }
-            .tip-message { font-size: 11px; }
+            .wellness-tip-card {
+                padding: 6px 8px !important;
+                border-radius: 14px !important;
+                margin-bottom: 12px !important;
+            }
+            .tip-icon { font-size: 7px !important; margin-bottom: 4px !important; }
+            .tip-message { font-size: 8px !important; }
             
-            .breath-section-centered { margin-bottom: 20px; }
-            .breath-btn { font-size: 11px; padding: 10px 16px; border-radius: 40px; }
+            .breath-section-centered { margin-bottom: 12px !important; }
+            .breath-btn { font-size: 8px !important; padding: 6px 12px !important; border-radius: 24px !important; }
             
-            .footer-back { margin-top: 16px; padding-top: 12px; }
-            .back-to-dashboard { font-size: 11px; padding: 6px 14px; }
+            .footer-back { margin-top: 10px !important; padding-top: 8px !important; }
+            .back-to-dashboard { font-size: 8px !important; padding: 4px 10px !important; }
             
             /* Modal */
-            .modal-content.breath-modal { padding: 16px; border-radius: 30px; margin: 10% auto; }
-            .breath-header h3 { font-size: 18px; }
-            .breath-subtitle { font-size: 10px; }
-            .breath-circle-container { width: 160px; height: 160px; }
-            .breath-inner-circle { width: 120px; height: 120px; }
-            .breath-phase-text { font-size: 11px; }
-            .breath-countdown { font-size: 30px; }
-            .breath-steps { gap: 2px; padding: 6px 8px; border-radius: 40px; flex-wrap: nowrap; }
-            .breath-step-item { padding: 4px 6px; }
-            .step-icon { font-size: 14px; }
-            .step-name { font-size: 7px; }
-            .step-duration { font-size: 8px; }
-            .breath-step-line { width: 8px; }
-            .breath-footer { padding: 8px 12px; border-radius: 30px; }
-            .breath-total-timer { font-size: 16px; }
-            .breath-cycle-count { font-size: 9px; }
-            .breath-close-btn { font-size: 11px; padding: 8px 16px; }
-            .modal-close { font-size: 18px; width: 24px; height: 24px; }
+            .modal-content.breath-modal { padding: 12px !important; border-radius: 24px !important; margin: 10% auto !important; }
+            .breath-header h3 { font-size: 14px !important; }
+            .breath-subtitle { font-size: 8px !important; }
+            .breath-circle-container { width: 120px !important; height: 120px !important; }
+            .breath-inner-circle { width: 90px !important; height: 90px !important; }
+            .breath-phase-text { font-size: 9px !important; }
+            .breath-countdown { font-size: 24px !important; }
+            .breath-steps { gap: 2px !important; padding: 4px 6px !important; border-radius: 24px !important; }
+            .breath-step-item { padding: 2px 4px !important; }
+            .step-icon { font-size: 11px !important; }
+            .step-name { font-size: 5px !important; }
+            .step-duration { font-size: 6px !important; }
+            .breath-step-line { width: 6px !important; }
+            .breath-footer { padding: 4px 8px !important; border-radius: 20px !important; }
+            .breath-total-timer { font-size: 12px !important; }
+            .breath-cycle-count { font-size: 7px !important; }
+            .breath-close-btn { font-size: 9px !important; padding: 6px 12px !important; }
+            .modal-close { font-size: 14px !important; width: 18px !important; height: 18px !important; }
         }
     </style>
     
