@@ -91,11 +91,15 @@
         <div class="charts-row">
             <div class="chart-card">
                 <h3>📈 EMOTION TREND (LAST 7 DAYS)</h3>
-                <canvas id="emotionChart" width="400" height="200"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="emotionChart" width="400" height="200"></canvas>
+                </div>
             </div>
             <div class="chart-card">
                 <h3>🥧 EMOTION DISTRIBUTION</h3>
-                <canvas id="riskChart" width="400" height="200"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="riskChart" width="400" height="200"></canvas>
+                </div>
             </div>
         </div>
         
@@ -408,10 +412,24 @@
             padding: 25px;
             border: 1px solid #2a2a2a;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
         
         .chart-card:hover { border-color: #00d4ff55; box-shadow: 0 0 25px rgba(0, 212, 255, 0.1); }
-        .chart-card h3 { color: #fff; margin-bottom: 20px; font-size: 18px; font-family: 'Space Grotesk', monospace; }
+        .chart-card h3 { color: #fff; margin-bottom: 20px; font-size: 18px; font-family: 'Space Grotesk', monospace; text-align: center; }
+        
+        .chart-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chart-wrapper canvas {
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: 200px;
+        }
         
         /* ACTIVITY TABLE */
         .activity-card {
@@ -480,7 +498,7 @@
         }
         
         /* ============================================================
-           DASHBOARD — RESPONSIVE FIX (UPDATED)
+           DASHBOARD — RESPONSIVE FIX (FINAL)
            ============================================================ */
         
         @media (max-width: 1024px) {
@@ -500,6 +518,7 @@
             .charts-row { grid-template-columns: 1fr; gap: 16px; }
             .chart-card { padding: 14px; }
             .chart-card h3 { font-size: 14px; }
+            .chart-wrapper canvas { max-height: 180px; }
             .activity-card { padding: 14px; }
             .activity-header { flex-direction: column; align-items: flex-start; gap: 8px; }
             .activity-header h3 { font-size: 14px; }
@@ -539,7 +558,7 @@
             .stat-card {
                 padding: 4px 2px !important;
                 border-radius: 10px !important;
-                min-height: 60px !important;
+                min-height: 55px !important;
             }
             .stat-icon {
                 font-size: 14px !important;
@@ -560,13 +579,13 @@
             }
             .navbar {
                 gap: 2px !important;
-                margin-bottom: 8px !important;
+                margin-bottom: 6px !important;
             }
             .nav-btn {
-                font-size: 5.5px !important;
+                font-size: 5px !important;
                 padding: 2px 4px !important;
                 gap: 1px !important;
-                border-radius: 12px !important;
+                border-radius: 10px !important;
                 letter-spacing: 0px !important;
             }
             .nav-btn i {
@@ -575,7 +594,7 @@
             .welcome-header {
                 padding: 3px 4px !important;
                 border-radius: 10px !important;
-                margin-bottom: 8px !important;
+                margin-bottom: 6px !important;
             }
             .welcome-tag {
                 font-size: 7px !important;
@@ -589,13 +608,13 @@
             .full-subtitle {
                 font-size: 5px !important;
                 letter-spacing: 0px !important;
-                margin-top: 2px !important;
+                margin-top: 1px !important;
             }
             .dashboard-header {
                 padding: 3px 4px !important;
-                border-radius: 12px !important;
-                margin-bottom: 8px !important;
-                gap: 4px !important;
+                border-radius: 10px !important;
+                margin-bottom: 6px !important;
+                gap: 3px !important;
                 flex-direction: column !important;
             }
             .logo { text-align: center !important; }
@@ -609,7 +628,7 @@
                 margin-top: 1px !important;
             }
             .user-info {
-                gap: 3px !important;
+                gap: 2px !important;
                 flex-wrap: wrap !important;
                 justify-content: center !important;
             }
@@ -621,17 +640,18 @@
             .live-dot { width: 4px !important; height: 4px !important; }
             .live-text { font-size: 5px !important; letter-spacing: 0px !important; }
             .user-name { font-size: 8px !important; }
-            .logout-btn { font-size: 6px !important; padding: 1px 6px !important; border-radius: 20px !important; }
+            .logout-btn { font-size: 5px !important; padding: 1px 4px !important; border-radius: 12px !important; }
             
-            .charts-row { gap: 8px !important; margin-bottom: 12px !important; }
-            .chart-card { padding: 6px !important; border-radius: 14px !important; }
-            .chart-card h3 { font-size: 8px !important; margin-bottom: 6px !important; }
+            .charts-row { gap: 4px !important; margin-bottom: 6px !important; }
+            .chart-card { padding: 4px !important; border-radius: 10px !important; overflow: hidden !important; }
+            .chart-card h3 { font-size: 6px !important; margin-bottom: 3px !important; text-align: center !important; }
+            .chart-wrapper canvas { max-height: 80px !important; max-width: 100% !important; }
             
-            .activity-card { padding: 6px !important; border-radius: 14px !important; }
-            .activity-header { gap: 3px !important; margin-bottom: 6px !important; }
-            .activity-header h3 { font-size: 8px !important; }
-            .record-badge { font-size: 5px !important; padding: 1px 4px !important; }
-            th, td { padding: 2px 2px !important; font-size: 5px !important; }
+            .activity-card { padding: 4px !important; border-radius: 10px !important; }
+            .activity-header { gap: 2px !important; margin-bottom: 4px !important; }
+            .activity-header h3 { font-size: 7px !important; }
+            .record-badge { font-size: 4px !important; padding: 1px 3px !important; }
+            th, td { padding: 2px 2px !important; font-size: 4px !important; }
             .table-wrapper { overflow-x: auto !important; }
         }
     </style>
@@ -771,7 +791,7 @@
                         tension: 0.3,
                         fill: true,
                         pointBackgroundColor: '#00ff88',
-                        pointBorderColor: '#00ff88',
+                        pointBorderColor: '#ffffff',
                         pointRadius: 6,
                         pointHoverRadius: 10,
                         pointBorderWidth: 2

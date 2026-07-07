@@ -73,7 +73,9 @@
         <!-- EMOTION TIMELINE CHART -->
         <div class="chart-card-large">
             <h3>📈 MY EMOTION TIMELINE (LAST 7 DAYS)</h3>
-            <canvas id="emotionTimelineChart" width="800" height="250"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="emotionTimelineChart" width="800" height="250"></canvas>
+            </div>
         </div>
         
         <!-- RULE-BASED WELLNESS TIP -->
@@ -438,6 +440,7 @@
             margin-bottom: 30px;
             border: 1px solid #2a2a2a;
             transition: all 0.3s;
+            overflow: hidden;
         }
         
         .chart-card-large:hover {
@@ -450,6 +453,20 @@
             margin-bottom: 20px;
             font-size: 16px;
             font-family: 'Space Grotesk', monospace;
+            text-align: center;
+        }
+        
+        .chart-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .chart-wrapper canvas {
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: 220px;
         }
         
         .wellness-tip-card {
@@ -788,7 +805,7 @@
         }
         
         /* ============================================================
-           ALERTS — RESPONSIVE FIX (UPDATED)
+           ALERTS — RESPONSIVE FIX (FINAL)
            ============================================================ */
         
         @media (max-width: 1024px) {
@@ -811,6 +828,7 @@
             .ring-value { font-size: 20px; }
             .chart-card-large { padding: 16px; }
             .chart-card-large h3 { font-size: 14px; }
+            .chart-wrapper canvas { max-height: 180px; }
             .wellness-tip-card { padding: 16px 20px; }
             .tip-message { font-size: 13px; }
             .breath-btn { padding: 12px 24px; font-size: 14px; }
@@ -838,7 +856,7 @@
             .subtitle { font-size: 6px !important; }
             .live-text { font-size: 6px !important; }
             .user-name { font-size: 8px !important; }
-            .logout-btn { font-size: 6px !important; padding: 1px 6px !important; border-radius: 16px !important; }
+            .logout-btn { font-size: 5px !important; padding: 1px 4px !important; border-radius: 12px !important; }
             .live-status { padding: 1px 4px !important; gap: 2px !important; }
             .live-dot { width: 4px !important; height: 4px !important; }
             
@@ -878,6 +896,7 @@
                 margin-bottom: 10px !important;
             }
             .chart-card-large h3 { font-size: 8px !important; margin-bottom: 6px !important; }
+            .chart-wrapper canvas { max-height: 100px !important; max-width: 100% !important; }
             
             .wellness-tip-card {
                 padding: 6px 8px !important;
@@ -1088,23 +1107,29 @@
                             label: '😰 STRESS / ANXIOUS',
                             data: stressData,
                             borderColor: '#ff0040',
-                            backgroundColor: 'rgba(255, 0, 64, 0.08)',
-                            borderWidth: 3,
+                            backgroundColor: 'rgba(255, 0, 64, 0.15)',
+                            borderWidth: 4,
                             tension: 0.3,
                             fill: true,
-                            pointRadius: 5,
-                            pointHoverRadius: 8
+                            pointBackgroundColor: '#ff0040',
+                            pointBorderColor: '#ffffff',
+                            pointRadius: 7,
+                            pointHoverRadius: 12,
+                            pointBorderWidth: 2
                         },
                         {
                             label: '😌 CALM / CONFIDENT',
                             data: calmData,
                             borderColor: '#00ff88',
-                            backgroundColor: 'rgba(0, 255, 136, 0.08)',
-                            borderWidth: 3,
+                            backgroundColor: 'rgba(0, 255, 136, 0.15)',
+                            borderWidth: 4,
                             tension: 0.3,
                             fill: true,
-                            pointRadius: 5,
-                            pointHoverRadius: 8
+                            pointBackgroundColor: '#00ff88',
+                            pointBorderColor: '#ffffff',
+                            pointRadius: 7,
+                            pointHoverRadius: 12,
+                            pointBorderWidth: 2
                         }
                     ]
                 },
@@ -1112,11 +1137,26 @@
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
-                        legend: { labels: { color: '#fff', font: { size: 11 } } }
+                        legend: { 
+                            labels: { 
+                                color: '#fff', 
+                                font: { size: 11, weight: 'bold' } 
+                            } 
+                        }
                     },
                     scales: {
-                        y: { ticks: { color: '#aaa', stepSize: 1 }, grid: { color: '#222' } },
-                        x: { ticks: { color: '#00d4ff', font: { size: 11 } }, grid: { color: '#222' } }
+                        y: { 
+                            ticks: { color: '#aaa', stepSize: 1 }, 
+                            grid: { color: '#222' },
+                            title: { display: true, text: 'NUMBER OF SCANS', color: '#aaa', font: { size: 10 } }
+                        },
+                        x: { 
+                            ticks: { 
+                                color: '#00d4ff', 
+                                font: { size: 11, weight: 'bold' }
+                            }, 
+                            grid: { color: '#222' } 
+                        }
                     }
                 }
             });
