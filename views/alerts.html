@@ -91,17 +91,6 @@
             </button>
         </div>
         
-        <!-- REFLECTION LOG (MOOD JOURNAL) -->
-        <div class="reflection-log-card">
-            <div class="reflection-log-header">
-                <h3>🪞 MY REFLECTION LOG</h3>
-                <div class="reflection-log-sub">How you felt after your last check-ins</div>
-            </div>
-            <div class="reflection-log-list" id="reflectionLogList">
-                <div class="reflection-log-empty">No reflections yet — complete a breathing exercise to log your first mood check-in.</div>
-            </div>
-        </div>
-        
         <!-- FOOTER BACK BUTTON -->
         <div class="footer-back">
             <a href="/dashboard" class="back-to-dashboard">← BACK TO DASHBOARD</a>
@@ -113,94 +102,61 @@
         <div class="modal-content breath-modal">
             <span class="modal-close">✖</span>
             
-            <div class="breath-header" id="breathHeader">
+            <div class="breath-header">
                 <span class="breath-icon">🧘</span>
                 <h3>Guided Breathing</h3>
                 <p class="breath-subtitle">Find your calm in 60 seconds</p>
             </div>
-
-            <div id="breathSessionView">
-                <div class="breath-main">
-                    <div class="breath-circle-container">
-                        <svg class="breath-svg" width="220" height="220" viewBox="0 0 220 220">
-                            <circle class="breath-bg-circle" cx="110" cy="110" r="100" fill="none" stroke="#2a2a3a" stroke-width="6"/>
-                            <circle class="breath-progress-circle" id="breathProgressCircle" cx="110" cy="110" r="100" fill="none" stroke="url(#breathGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" transform="rotate(-90 110 110)"/>
-                            <defs>
-                                <linearGradient id="breathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#00d4ff"/>
-                                    <stop offset="100%" stop-color="#00ff88"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                        <div class="breath-inner-circle" id="breathInnerCircle">
-                            <div class="breath-phase-text" id="breathPhaseText">INHALE</div>
-                            <div class="breath-countdown" id="breathCountdown">4</div>
-                        </div>
+            
+            <div class="breath-main">
+                <div class="breath-circle-container">
+                    <svg class="breath-svg" width="220" height="220" viewBox="0 0 220 220">
+                        <circle class="breath-bg-circle" cx="110" cy="110" r="100" fill="none" stroke="#2a2a3a" stroke-width="6"/>
+                        <circle class="breath-progress-circle" id="breathProgressCircle" cx="110" cy="110" r="100" fill="none" stroke="url(#breathGrad)" stroke-width="6" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" transform="rotate(-90 110 110)"/>
+                        <defs>
+                            <linearGradient id="breathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00d4ff"/>
+                                <stop offset="100%" stop-color="#00ff88"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="breath-inner-circle" id="breathInnerCircle">
+                        <div class="breath-phase-text" id="breathPhaseText">INHALE</div>
+                        <div class="breath-countdown" id="breathCountdown">4</div>
                     </div>
-                </div>
-
-                <div class="breath-steps">
-                    <div class="breath-step-item" id="stepInhaleItem">
-                        <div class="step-indicator"></div>
-                        <div class="step-icon">⬆️</div>
-                        <div class="step-name">INHALE</div>
-                        <div class="step-duration">4s</div>
-                    </div>
-                    <div class="breath-step-line"></div>
-                    <div class="breath-step-item" id="stepHoldItem">
-                        <div class="step-indicator"></div>
-                        <div class="step-icon">⏸️</div>
-                        <div class="step-name">HOLD</div>
-                        <div class="step-duration">4s</div>
-                    </div>
-                    <div class="breath-step-line"></div>
-                    <div class="breath-step-item" id="stepExhaleItem">
-                        <div class="step-indicator"></div>
-                        <div class="step-icon">⬇️</div>
-                        <div class="step-name">EXHALE</div>
-                        <div class="step-duration">6s</div>
-                    </div>
-                </div>
-
-                <div class="breath-footer">
-                    <div class="breath-total-timer" id="breathTotalTimer">00:00</div>
-                    <div class="breath-cycle-count" id="breathCycleCount">CYCLE 1</div>
-                </div>
-
-                <div class="breath-actions">
-                    <button class="breath-close-btn" id="breathCloseBtn">✨ COMPLETE SESSION</button>
                 </div>
             </div>
-
-            <!-- MOOD CHECK-IN STEP (shown after breathing session completes) -->
-            <div id="moodCheckView" class="mood-check-view">
-                <div class="mood-check-icon">🪞</div>
-                <h3 class="mood-check-title">How do you feel now?</h3>
-                <p class="mood-check-subtitle">Tap an emoji to log your mood</p>
-                <div class="mood-check-emojis" id="moodCheckEmojis">
-                    <button type="button" class="mood-emoji-btn" data-mood="Great" data-emoji="😄">
-                        <span class="mood-emoji-glyph">😄</span>
-                        <span class="mood-emoji-label">Great</span>
-                    </button>
-                    <button type="button" class="mood-emoji-btn" data-mood="Calm" data-emoji="😌">
-                        <span class="mood-emoji-glyph">😌</span>
-                        <span class="mood-emoji-label">Calm</span>
-                    </button>
-                    <button type="button" class="mood-emoji-btn" data-mood="Neutral" data-emoji="😐">
-                        <span class="mood-emoji-glyph">😐</span>
-                        <span class="mood-emoji-label">Neutral</span>
-                    </button>
-                    <button type="button" class="mood-emoji-btn" data-mood="Tired" data-emoji="😴">
-                        <span class="mood-emoji-glyph">😴</span>
-                        <span class="mood-emoji-label">Tired</span>
-                    </button>
-                    <button type="button" class="mood-emoji-btn" data-mood="Stressed" data-emoji="😣">
-                        <span class="mood-emoji-glyph">😣</span>
-                        <span class="mood-emoji-label">Stressed</span>
-                    </button>
+            
+            <div class="breath-steps">
+                <div class="breath-step-item" id="stepInhaleItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⬆️</div>
+                    <div class="step-name">INHALE</div>
+                    <div class="step-duration">4s</div>
                 </div>
-                <div class="mood-check-confirm" id="moodCheckConfirm">✅ Mood logged! Great job checking in.</div>
-                <button type="button" class="mood-check-skip" id="moodCheckSkip">Skip for now</button>
+                <div class="breath-step-line"></div>
+                <div class="breath-step-item" id="stepHoldItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⏸️</div>
+                    <div class="step-name">HOLD</div>
+                    <div class="step-duration">4s</div>
+                </div>
+                <div class="breath-step-line"></div>
+                <div class="breath-step-item" id="stepExhaleItem">
+                    <div class="step-indicator"></div>
+                    <div class="step-icon">⬇️</div>
+                    <div class="step-name">EXHALE</div>
+                    <div class="step-duration">6s</div>
+                </div>
+            </div>
+            
+            <div class="breath-footer">
+                <div class="breath-total-timer" id="breathTotalTimer">00:00</div>
+                <div class="breath-cycle-count" id="breathCycleCount">CYCLE 1</div>
+            </div>
+            
+            <div class="breath-actions">
+                <button class="breath-close-btn" id="breathCloseBtn">✨ COMPLETE SESSION</button>
             </div>
         </div>
     </div>
@@ -607,36 +563,20 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.94);
             backdrop-filter: blur(16px);
-            overflow-y: auto;
-            padding: 24px 0;
-            box-sizing: border-box;
         }
         
         .modal-content.breath-modal {
             background: linear-gradient(145deg, rgba(12, 12, 22, 0.96), rgba(8, 8, 16, 0.98));
             backdrop-filter: blur(20px);
-            margin: 0 auto;
-            padding: 28px 30px 34px;
-            border-radius: 48px;
+            margin: 5% auto;
+            padding: 30px 30px 40px;
+            border-radius: 60px;
             width: 520px;
             max-width: 90%;
-            max-height: calc(100vh - 48px);
-            overflow-y: auto;
             text-align: center;
             border: 1px solid rgba(0, 212, 255, 0.35);
             box-shadow: 0 0 60px rgba(0, 212, 255, 0.25), 0 20px 40px rgba(0, 0, 0, 0.4);
             animation: modalPop 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
-            /* thin, unobtrusive scrollbar so long content never gets clipped */
-            scrollbar-width: thin;
-            scrollbar-color: rgba(0, 212, 255, 0.4) transparent;
-        }
-
-        .modal-content.breath-modal::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-content.breath-modal::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.4);
-            border-radius: 6px;
         }
         
         @keyframes modalPop {
@@ -863,198 +803,6 @@
             transform: scale(1.02);
             box-shadow: 0 0 18px rgba(0, 212, 255, 0.4);
         }
-
-        /* MOOD CHECK-IN STEP */
-        .mood-check-view {
-            display: none;
-            padding-top: 6px;
-        }
-
-        .mood-check-view.active {
-            display: block;
-            animation: modalPop 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
-        }
-
-        .mood-check-icon {
-            font-size: 44px;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .mood-check-title {
-            color: #00d4ff;
-            font-family: 'Orbitron', monospace;
-            font-size: 21px;
-            margin: 6px 0 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .mood-check-subtitle {
-            color: #888;
-            font-size: 12px;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: 22px;
-        }
-
-        .mood-check-emojis {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-        }
-
-        .mood-emoji-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1.5px solid #2a2a3a;
-            border-radius: 20px;
-            padding: 14px 10px;
-            min-width: 74px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Space Grotesk', monospace;
-        }
-
-        .mood-emoji-btn:hover {
-            transform: translateY(-4px);
-            border-color: #00d4ff;
-            background: rgba(0, 212, 255, 0.08);
-            box-shadow: 0 8px 18px rgba(0, 212, 255, 0.15);
-        }
-
-        .mood-emoji-btn.selected {
-            border-color: #00ff88;
-            background: rgba(0, 255, 136, 0.12);
-            box-shadow: 0 0 16px rgba(0, 255, 136, 0.3);
-        }
-
-        .mood-emoji-glyph {
-            font-size: 30px;
-            line-height: 1;
-        }
-
-        .mood-emoji-label {
-            font-size: 10px;
-            color: #ccc;
-            letter-spacing: 0.5px;
-        }
-
-        .mood-check-confirm {
-            display: none;
-            color: #00ff88;
-            font-size: 14px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            margin: 4px 0 16px;
-        }
-
-        .mood-check-confirm.show {
-            display: block;
-            animation: modalPop 0.3s ease;
-        }
-
-        .mood-check-skip {
-            background: transparent;
-            border: none;
-            color: #777;
-            font-size: 12px;
-            font-family: 'Poppins', sans-serif;
-            text-decoration: underline;
-            cursor: pointer;
-            padding: 6px;
-        }
-
-        .mood-check-skip:hover {
-            color: #aaa;
-        }
-
-        /* REFLECTION LOG CARD */
-        .reflection-log-card {
-            background: rgba(8, 8, 12, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            padding: 26px 28px;
-            margin-bottom: 28px;
-            border: 1px solid #2a2a2a;
-            transition: all 0.3s;
-        }
-
-        .reflection-log-card:hover {
-            border-color: #00d4ff55;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
-        }
-
-        .reflection-log-header h3 {
-            color: #fff;
-            font-size: 16px;
-            font-family: 'Space Grotesk', monospace;
-            margin-bottom: 4px;
-        }
-
-        .reflection-log-sub {
-            color: #888;
-            font-size: 12px;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: 18px;
-        }
-
-        .reflection-log-empty {
-            color: #666;
-            font-size: 13px;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-            padding: 18px 10px;
-        }
-
-        .reflection-log-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .reflection-log-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid #222;
-            border-radius: 16px;
-            padding: 12px 16px;
-            transition: all 0.2s ease;
-        }
-
-        .reflection-log-item:hover {
-            border-color: #00d4ff44;
-            transform: translateX(4px);
-        }
-
-        .reflection-log-emoji {
-            font-size: 26px;
-            flex-shrink: 0;
-        }
-
-        .reflection-log-info {
-            flex: 1;
-            text-align: left;
-        }
-
-        .reflection-log-mood {
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-            font-family: 'Space Grotesk', monospace;
-        }
-
-        .reflection-log-time {
-            color: #888;
-            font-size: 11px;
-            margin-top: 2px;
-            font-family: 'Poppins', sans-serif;
-        }
         
         /* ============================================================
            ALERTS / HUB — RESPONSIVE FIX (FINAL)
@@ -1088,10 +836,6 @@
             .breath-steps { gap: 4px; padding: 8px 10px; }
             .breath-step-line { width: 15px; }
             .step-icon { font-size: 18px; }
-            .mood-emoji-btn { min-width: 62px; padding: 10px 6px; }
-            .mood-emoji-glyph { font-size: 24px; }
-            .reflection-log-card { padding: 16px; }
-            .reflection-log-header h3 { font-size: 14px; }
         }
         
         @media (max-width: 600px) {
@@ -1187,25 +931,6 @@
             .breath-cycle-count { font-size: 8px; }
             .breath-close-btn { font-size: 10px; padding: 8px 16px; }
             .modal-close { font-size: 16px; width: 20px; height: 20px; }
-
-            .mood-check-icon { font-size: 32px; }
-            .mood-check-title { font-size: 15px; }
-            .mood-check-subtitle { font-size: 9px; margin-bottom: 14px; }
-            .mood-check-emojis { gap: 6px; margin-bottom: 12px; }
-            .mood-emoji-btn { min-width: 52px; padding: 8px 4px; border-radius: 14px; gap: 3px; }
-            .mood-emoji-glyph { font-size: 20px; }
-            .mood-emoji-label { font-size: 7px; }
-            .mood-check-confirm { font-size: 11px; }
-            .mood-check-skip { font-size: 10px; }
-
-            .reflection-log-card { padding: 12px; border-radius: 18px; margin-bottom: 14px; }
-            .reflection-log-header h3 { font-size: 12px; }
-            .reflection-log-sub { font-size: 9px; margin-bottom: 10px; }
-            .reflection-log-item { padding: 8px 10px; border-radius: 12px; gap: 8px; }
-            .reflection-log-emoji { font-size: 18px; }
-            .reflection-log-mood { font-size: 10.5px; }
-            .reflection-log-time { font-size: 9px; }
-            .reflection-log-empty { font-size: 10.5px; padding: 12px 6px; }
         }
     </style>
     
@@ -1474,75 +1199,6 @@
         }
         
         // ELEGANT BREATHING EXERCISE
-        // ===== MOOD JOURNAL (REFLECTION LOG) =====
-        const MOOD_JOURNAL_EMOJI = {
-            'Great': '😄',
-            'Calm': '😌',
-            'Neutral': '😐',
-            'Tired': '😴',
-            'Stressed': '😣'
-        };
-
-        function moodJournalKey() {
-            const uid = currentUser && currentUser.id ? currentUser.id : 'guest';
-            return `neuroprint_mood_journal_${uid}`;
-        }
-
-        function getMoodJournal() {
-            try {
-                const raw = localStorage.getItem(moodJournalKey());
-                return raw ? JSON.parse(raw) : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function saveMoodEntry(mood, emoji) {
-            const entries = getMoodJournal();
-            entries.unshift({ mood, emoji, timestamp: Date.now() });
-            // keep the most recent 20 entries only
-            const trimmed = entries.slice(0, 20);
-            try {
-                localStorage.setItem(moodJournalKey(), JSON.stringify(trimmed));
-            } catch (e) { /* storage unavailable, ignore */ }
-            renderReflectionLog();
-        }
-
-        function formatRelativeTime(timestamp) {
-            const now = new Date();
-            const then = new Date(timestamp);
-            const isSameDay = now.toDateString() === then.toDateString();
-            const yesterday = new Date(now);
-            yesterday.setDate(yesterday.getDate() - 1);
-            const isYesterday = yesterday.toDateString() === then.toDateString();
-            const timeStr = then.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            if (isSameDay) return `Today, ${timeStr}`;
-            if (isYesterday) return `Yesterday, ${timeStr}`;
-            return then.toLocaleDateString([], { day: 'numeric', month: 'short' }) + `, ${timeStr}`;
-        }
-
-        function renderReflectionLog() {
-            const list = document.getElementById('reflectionLogList');
-            if (!list) return;
-            const entries = getMoodJournal();
-
-            if (entries.length === 0) {
-                list.innerHTML = '<div class="reflection-log-empty">No reflections yet — complete a breathing exercise to log your first mood check-in.</div>';
-                return;
-            }
-
-            list.innerHTML = entries.slice(0, 5).map(entry => `
-                <div class="reflection-log-item">
-                    <div class="reflection-log-emoji">${entry.emoji}</div>
-                    <div class="reflection-log-info">
-                        <div class="reflection-log-mood">${entry.mood.toUpperCase()}</div>
-                        <div class="reflection-log-time">${formatRelativeTime(entry.timestamp)}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
         function setupBreathingModal() {
             const modal = document.getElementById('breathModal');
             const btn = document.getElementById('breathBtn');
@@ -1556,12 +1212,6 @@
             const stepInhale = document.getElementById('stepInhaleItem');
             const stepHold = document.getElementById('stepHoldItem');
             const stepExhale = document.getElementById('stepExhaleItem');
-            const breathSessionView = document.getElementById('breathSessionView');
-            const moodCheckView = document.getElementById('moodCheckView');
-            const moodCheckConfirm = document.getElementById('moodCheckConfirm');
-            const moodCheckSkip = document.getElementById('moodCheckSkip');
-            const moodEmojiBtns = document.querySelectorAll('.mood-emoji-btn');
-            const breathHeader = document.getElementById('breathHeader');
             
             let sessionStartTime = null;
             let currentCycle = 1;
@@ -1653,28 +1303,13 @@
                 } else {
                     breathPhaseText.textContent = 'COMPLETE';
                     breathCountdown.textContent = '✨';
-                    stopAll();
                     setTimeout(() => {
-                        showMoodCheckIn();
-                    }, 1200);
+                        if (modal.style.display === 'block') {
+                            modal.style.display = 'none';
+                        }
+                        stopAll();
+                    }, 1500);
                 }
-            }
-
-            function showMoodCheckIn() {
-                breathHeader.style.display = 'none';
-                breathSessionView.style.display = 'none';
-                moodCheckView.classList.add('active');
-                moodCheckConfirm.classList.remove('show');
-                moodEmojiBtns.forEach(b => b.classList.remove('selected'));
-                // scroll the modal back to top so the mood check-in is fully visible
-                const modalContent = modal.querySelector('.modal-content');
-                if (modalContent) modalContent.scrollTop = 0;
-            }
-
-            function hideMoodCheckIn() {
-                moodCheckView.classList.remove('active');
-                breathHeader.style.display = '';
-                breathSessionView.style.display = '';
             }
             
             function startBreathingSession() {
@@ -1703,12 +1338,10 @@
                 progressCircle.style.strokeDashoffset = circumference;
                 setStepActive(0);
                 currentCycle = 1;
-                hideMoodCheckIn();
             }
             
             btn.onclick = () => {
                 modal.style.display = 'block';
-                hideMoodCheckIn();
                 startBreathingSession();
             };
             
@@ -1717,25 +1350,6 @@
             };
             
             closeSessionBtn.onclick = () => {
-                resetAndClose();
-            };
-
-            moodEmojiBtns.forEach(button => {
-                button.onclick = () => {
-                    const mood = button.getAttribute('data-mood');
-                    const emoji = button.getAttribute('data-emoji');
-                    moodEmojiBtns.forEach(b => b.classList.remove('selected'));
-                    button.classList.add('selected');
-                    saveMoodEntry(mood, emoji);
-                    moodCheckConfirm.classList.add('show');
-                    setTimeout(() => {
-                        modal.style.display = 'none';
-                        resetAndClose();
-                    }, 1300);
-                };
-            });
-
-            moodCheckSkip.onclick = () => {
                 resetAndClose();
             };
             
@@ -1755,7 +1369,6 @@
             await loadUser();
             await loadUserData();
             setupBreathingModal();
-            renderReflectionLog();
         }
 
         let resizeTimer;
