@@ -43,7 +43,10 @@ if (process.env.DATABASE_URL) {
         ssl: { rejectUnauthorized: false }
     });
     db.connect()
-        .then(() => console.log('✅ Connected to PostgreSQL (Render)'))
+        .then(() => {
+            console.log('✅ Connected to PostgreSQL (Render)');
+            createTables();
+        })
         .catch(err => console.error('PostgreSQL connection failed:', err));
 } else {
     // Running locally — MySQL
@@ -61,6 +64,7 @@ if (process.env.DATABASE_URL) {
             return;
         }
         console.log('✅ Connected to MySQL (Local)');
+        createTables();
     });
 }
 
@@ -101,6 +105,51 @@ function queryDB(sql, params) {
             });
         }
     });
+}
+
+// ============= AUTO CREATE TABLES =============
+async function createTables() {
+    try {
+        await queryDB(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                fullname VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                fingerprint_template TEXT
+            )
+        `, []);
+
+        await queryDB(`
+            CREATE TABLE IF NOT EXISTS fingerprint_scans (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                scan_duration_ms INTEGER,
+                pressure_simulated INTEGER,
+                retry_count INTEGER,
+                interaction_speed VARCHAR(50),
+                emotion_estimate VARCHAR(100),
+                risk_level VARCHAR(50),
+                is_successful BOOLEAN,
+                scanned_at TIMESTAMP DEFAULT NOW()
+            )
+        `, []);
+
+        await queryDB(`
+            CREATE TABLE IF NOT EXISTS security_alerts (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                alert_type VARCHAR(255),
+                description TEXT,
+                is_resolved BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT NOW()
+            )
+        `, []);
+
+        console.log('✅ Tables checked/created successfully');
+    } catch (err) {
+        console.log('❌ Error creating tables:', err);
+    }
 }
 
 // ============= EMAIL REPORT SYSTEM =============
